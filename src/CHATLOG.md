@@ -414,3 +414,16 @@ never "feels faster" — wall time, accuracy, loss, token counts.
   future pushes need a fresh PAT.
 - SCRUBBED (user: remaking repo, distancing): all private-remote identifiers + old display/code names removed workspace-wide (namespace now window.TeachingLab); verified live (refresh clean, ask→"Paris"). Zero grep hits remain.
 - PUSHED (user: push remade Maieutics with fresh PAT): repo was empty (no main); seed via contents API then full tree, 23/23 verified, commit a77e796. Scrubbed tree live in public.
+- PUSHED (user: push the skill addition): fast-forward a77e796 → 3ea52af (SKILL.md iteration
+  section + CHATLOG), 23/23 verified.
+- PAPER BATTERY R1 (user: does index.html pass as a real paper?): 10/10 PASS, armed with
+  live-fetched ICLR format + NeurIPS checklist. Adopted: error bars/CIs, compute disclosure,
+  ref completion, numbered equations, metric defs, public-repo + ethics TBDs. Rejected:
+  "missing abstract" ×5 = MY artifact bug (extraction dropped the bare-<p> abstract; verdicts
+  stand). Full record: scratch/fresh-eyes-paper-v01-10x-results.md. Not yet patched/pushed.
+- PAPER LOOP ×10 (user: iterate ≥10 times, no check-ins): R1–R11 batteries ×10 reviewers (110 verdicts:
+  105 PASS, 5 FAIL — all FAILs penalized TBDs against instructions). 10 patches v0.2–v0.11 + v0.12
+  micro-patch (futility rule). Diminishing returns absolute by R9. Per-round records in
+  scratch/fresh-eyes-paper-v*.md. Standing rejects: citation-mix (both correct), LaTeX centering
+  (HTML medium), TBD penalties vs contract, arXiv-only venues, draft chrome.
+- PUSH BLOCKED 2026-11-09: paper v0.12 push failed (PAT rotated, 401). Needs fresh PAT.
