@@ -49,6 +49,23 @@
   .eq { background: #070b12; border: 1px solid #26314a; border-radius: 8px; padding: 8px 12px; margin: 8px 0; overflow-x: auto; font-size: 14px; }
   section.card h3 { margin: 14px 0 6px; font-size: 16px; color: #e6eefc; }
   .draft-banner { border: 1px dashed #8a6d2f; border-radius: 10px; padding: 10px 12px; margin-top: 10px; font-size: 13px; color: #f0dfb8; background: #171208; line-height: 1.55; }
+  .dict-link { background: rgba(127,184,255,.14); border: none; border-bottom: 2px solid #7fb8ff; border-radius: 4px; padding: 0 2px; cursor: pointer; color: inherit; font: inherit; text-align: left; }
+  .dict-link:hover { background: rgba(127,184,255,.30); }
+  .dict-link.term { background: rgba(127,184,255,.14); border-bottom: 2px solid #7fb8ff; }
+  .dict-link.term:hover { background: rgba(127,184,255,.30); }
+  .dict-panel { position: fixed; top: 0; right: 0; bottom: 0; width: min(380px, 92vw); background: #0e1526; border-left: 1px solid #3b4a6b; z-index: 50; transform: translateX(105%); transition: transform .2s ease; display: flex; flex-direction: column; box-shadow: -12px 0 40px rgba(0,0,0,.5); }
+  .dict-panel.open { transform: none; }
+  .dict-head { display: flex; align-items: center; gap: 8px; padding: 12px 14px; border-bottom: 1px solid #26314a; }
+  .dict-title { font-weight: 700; font-size: 15px; flex: 1; }
+  .dict-close { padding: 6px 10px; font-size: 14px; }
+  .dict-tabs { display: flex; gap: 6px; padding: 10px 14px 0; }
+  .dict-tab { padding: 6px 12px; font-size: 13px; border-radius: 999px; }
+  .dict-tab[aria-selected="true"] { background: #27395c; border-color: #7fb8ff; }
+  .dict-body { padding: 12px 14px 18px; overflow-y: auto; font-size: 14px; line-height: 1.6; color: #c4cfe2; }
+  .dict-body .lvl-tag { display: inline-block; font-size: 11px; border-radius: 5px; padding: 1px 7px; margin-bottom: 8px; background: #0e2a1a; color: #6fcf97; border: 1px solid #2c4a38; }
+  .dict-def-link { display: inline-block; margin-top: 12px; padding: 6px 12px; font-size: 13px; border-radius: 999px; }
+  .sec-flash { border-radius: 10px; box-shadow: 0 0 0 2px #7fb8ff; transition: box-shadow .3s; }
+  @media (max-width: 640px) { .dict-panel { top: auto; left: 0; right: 0; bottom: 0; width: auto; max-height: 72vh; border-left: none; border-top: 1px solid #3b4a6b; transform: translateY(105%); } .dict-panel.open { transform: none; } }
 </style>
 
 <div class="wrap">
@@ -64,40 +81,42 @@
 
 <section class="card">
   <h2>1 · Introduction</h2>
-  <p>Test-time scaling has become a third axis of model capability alongside parameters and data (Geiping et al., 2025). The dominant implementation verbalizes: models write longer chains of thought and are trained on long demonstrations (Wei et al., 2022; Muennighoff et al., 2025; OpenAI, 2024). A quieter line of work thinks without writing: a recurrent block iterates in continuous latent space, unrolled further at test time than at training time (Geiping et al., 2025; Bansal et al., 2022; Anil et al., 2022). Complementary to both, a new geometric proposal argues the field should de-center attention itself in favor of explicit flows on finite-dimensional manifolds (Zhang, 2025).</p>
-  <p>This draft asks a narrower question at bench scale: <b>can a small recurrent network be taught genuine addressable lookup</b> — retrieving a value bound to a key at an arbitrary position — <b>or can it only memorize and shortcut?</b> We work in src/tinynn, a hand-rolled recurrent-depth MLP (thousands of params, CPU, exact gradient checks throughout), on associative-recall tasks where evaluation uses a kill set: one name at the start of a long line, the question at the very end. Our thesis: <b>ignition is a teaching problem, not a time problem.</b> Answer-only training never ignites at our scale (0/32; more steps memorize or heuristic-lock). Hint-trained teachers can transmit the rule to hint-free students through staged hint fading (5/8 ignite, 95% CI 0.31–0.86) — but transmission is fragile, failure modes differ by seed, and every effect size below is regime-bound until a scaling hypothesis and a cross-domain transfer test say otherwise. Terms (ignite, kill set, cold copy, fade) are defined in §3.1. <span class="tag m">MEASURED</span> <span class="tag t">TBD</span></p>
-  <p class="hidden-note">Claim map: §4.1 hinted regime (attention looks up, geometry scaffolds, global-mean is null); §4.2 the answer-only wall (H, H2); §4.3 transmission (Wave D family). §6 retracts what did not survive. §7 lists exactly what would falsify or generalize each claim. §8 maps the road from this result to the declared endpoint: a nursery that builds models.</p>
+  <p>The program behind this draft is bigger than one result: a <button class="dict-link" data-dict="d-nursery">nursery that, given an assigned topic plus the open world, creates from scratch a full model that learns it</button> — brain, lessons, and exams, with learners as disposable proof. The full road is mapped in §8 (complete specs in src/README.md); every stage there inherits this paper's bars and adds its own. This paper reports the program's first step to clear its own bars: that a small recurrent network can be taught genuine rule-like lookup by staged hint fading — and exactly where that transmission breaks. Nothing below claims the nursery; everything below is evidence the first step is real.</p>
+  <p><button class="dict-link term" data-dict="d-testtime">Test-time scaling</button> has become a third axis of model capability alongside parameters and data (Geiping et al., 2025). The dominant implementation verbalizes: models write longer chains of thought and are trained on long demonstrations (Wei et al., 2022; Muennighoff et al., 2025; OpenAI, 2024). A quieter line of work <button class="dict-link" data-dict="d-latent">thinks without writing: a recurrent block iterates in continuous latent space, unrolled further at test time than at training time</button> (Geiping et al., 2025; Bansal et al., 2022; Anil et al., 2022). Complementary to both, a new geometric proposal argues the field should de-center attention itself in favor of explicit flows on finite-dimensional manifolds (Zhang, 2025).</p>
+  <p>This draft asks a narrower question at bench scale: <button class="dict-link" data-dict="d-addressable"><b>can a small recurrent network be taught genuine addressable lookup</b></button> — retrieving a value bound to a key at an arbitrary position — <b>or can it only memorize and shortcut?</b> We work in src/tinynn, a hand-rolled recurrent-depth MLP (thousands of params, CPU, exact gradient checks throughout), on associative-recall tasks where evaluation uses a <button class="dict-link term" data-dict="d-killset">kill set</button>: one name at the start of a long line, the question at the very end. Our thesis: <button class="dict-link" data-dict="d-thesis"><b>ignition is a teaching problem, not a time problem.</b></button> Answer-only training never ignites at our scale (0/32; more steps memorize or heuristic-lock). Hint-trained teachers can transmit the rule to hint-free students through <button class="dict-link term" data-dict="d-fade">staged hint fading</button> (5/8 ignite, 95% CI 0.31–0.86) — but transmission is fragile, failure modes differ by seed, and every effect size below is regime-bound until a scaling hypothesis and a cross-domain transfer test say otherwise. Terms (<button class="dict-link term" data-dict="d-ignite">ignite</button>, <button class="dict-link term" data-dict="d-killset">kill set</button>, <button class="dict-link term" data-dict="d-coldcopy">cold copy</button>, <button class="dict-link term" data-dict="d-fade">fade</button>) are defined in <a href="#sec31">§3.1</a>. <span class="tag m">MEASURED</span> <span class="tag t">TBD</span></p>
+  <p>How the rest is organized: §4.1 the hinted regime (attention looks up, geometry scaffolds, global-mean is null); §4.2 the answer-only wall (H, H2); §4.3 transmission (Wave D family). §5 gives the verdict. §6 retracts what did not survive. §7 lists exactly what would falsify or generalize each claim. §8 maps the road from this result to the declared endpoint: a nursery that builds models.</p>
 </section>
 
 <section class="card">
   <h2>2 · Related work</h2>
+  <p>Three lines of work converge on this paper — latent recurrence that thinks without writing (§2.1), verbalized test-time compute (§2.2), and attention-free geometry (§2.3) — on top of older recurrent priors (§2.4). Each gets a subsection; §2.5 says where we stand.</p>
   <h3>2.1 Latent recurrence: Huginn</h3>
-  <p>Geiping et al. (2025) build a 3.5B-parameter depth-recurrent Transformer trained on 800B tokens, improving at test time up to roughly 50B-equivalent behavior. The macroscopic design is a triplet — prelude P embeds, core R iterates, coda C decodes — with the embedded input re-injected every step from a random start (Eq. 1):</p>
+  <p>Geiping et al. (2025) build <button class="dict-link" data-dict="d-huginn">a 3.5B-parameter depth-recurrent Transformer trained on 800B tokens, improving at test time up to roughly 50B-equivalent behavior</button>. The macroscopic design is a triplet — prelude P embeds, core R iterates, coda C decodes — with the embedded input re-injected every step from a random start (Eq. 1):</p>
   <div class="eq">e = P(x),&nbsp;&nbsp; s<sub>0</sub> ∼ N(0, σ<sup>2</sup>I),&nbsp;&nbsp; s<sub>i</sub> = R(e, s<sub>i−1</sub>),&nbsp;&nbsp; p = C(s<sub>r</sub>)&nbsp;&nbsp;(1)</div>
   <p>Training samples a random iteration count per forward pass with standard next-token loss and truncated backpropagation; at test time the core unrolls further than training. Two design constraints we inherit explicitly: input re-injection every step and random initialization, which the deep-thinking literature shows stabilize recurrence toward path independence (Bansal et al., 2022; Anil et al., 2022). Reported emergences include per-token adaptive compute, zero-shot KV-cache sharing, continuous chain-of-thought, self-speculative decoding (§6), and orbiting trajectories on numerical prompts (§7). Their philosophical bet is ours too: <i>“By constructing an architecture that is compute-heavy and small in parameter count, we hope to set a strong prior towards models that solve problems by ‘thinking’ … instead of memorizing,”</i> toward <i>“a third axis on which to scale model performance”</i> (§2). We test that prior at bench scale: our depth curves (§4.1) are their Fig. 1 in miniature, and our orbit visualizer (Appendix C) emulates their §7 to build intuition before touching a real net.</p>
   <h3>2.2 Verbalized test-time compute</h3>
-  <p>Chain-of-thought prompting (Wei et al., 2022) externalizes reasoning into tokens; s1 (Muennighoff et al., 2025) scales it by budget-forcing with a literal “Wait”; o1 (OpenAI, 2024) industrialized it. Against these, latent recurrence needs no bespoke long demonstrations and pays FLOPs instead of context (Geiping et al., 2025, §2). Our cost table (Appendix B) concedes the corollary: our own live demo layers refinement calls on top of an LLM and therefore pays the token cost the real architecture avoids.</p>
+  <p><button class="dict-link" data-dict="d-verbalcot">Chain-of-thought prompting</button> (Wei et al., 2022) externalizes reasoning into tokens; s1 (Muennighoff et al., 2025) scales it by budget-forcing with a literal “Wait”; o1 (OpenAI, 2024) industrialized it. Against these, latent recurrence needs no bespoke long demonstrations and pays FLOPs instead of context (Geiping et al., 2025, §2). Our cost table (Appendix B) concedes the corollary: our own live demo layers refinement calls on top of an LLM and therefore pays the token cost the real architecture avoids.</p>
   <h3>2.3 De-centering attention: Grassmann flows</h3>
-  <p>Zhang (2025) reinterprets self-attention as <i>tensor lifting</i> — mapping a hidden vector into a high-dimensional space of pairwise interactions — and argues opacity is structural: <i>“a major source of large-model uninterpretability is that the tensor lifting performed by attention is mathematically non-traceable.”</i> The proposed alternative encodes local token pairs as 2D subspaces of a Grassmann manifold Gr(2, r) via Plücker coordinates, with no attention matrix anywhere (Eq. 2):</p>
+  <p>Zhang (2025) reinterprets self-attention as <button class="dict-link" data-dict="d-grassmann"><i>tensor lifting</i></button> — mapping a hidden vector into a high-dimensional space of pairwise interactions — and argues opacity is structural: <i>“a major source of large-model uninterpretability is that the tensor lifting performed by attention is mathematically non-traceable.”</i> The proposed alternative encodes local token pairs as 2D subspaces of a Grassmann manifold Gr(2, r) via Plücker coordinates, with no attention matrix anywhere (Eq. 2):</p>
   <div class="eq">z<sub>t</sub> = W<sub>red</sub> h<sub>t</sub> + b<sub>red</sub>,&nbsp;&nbsp; p<sub>ij</sub>(t, Δ) = z<sub>t,i</sub> z<sub>t+Δ,j</sub> − z<sub>t,j</sub> z<sub>t+Δ,i</sub>,&nbsp;&nbsp; 1 ≤ i &lt; j ≤ r&nbsp;&nbsp;(2)</div>
   <p>with multi-scale offsets Δ in (1, 2, 4, 8, 12, 16), rank r = 32, and gated fusion back into the stream (in Zhang's notation h<sub>t</sub> is the stream state, W<sub>red</sub> a learned reduction, b<sub>red</sub> its bias). A 13–18M-parameter pure-Grassmann LM lands within 10–15% of a size-matched Transformer on Wikitext-2; a Grassmann NLI head edges a Transformer head on SNLI (test 0.8538 vs 0.8511); mixing scales linearly in sequence length for fixed rank. The paper's aim is our epigraph: <i>“Our aim is not to claim that attention is obsolete, but to de-center it. What one fundamentally needs is not attention itself, but a sufficiently expressive geometric evolution mechanism.”</i> We take this as a design brief, not gospel (single author, weak absolute numbers, unreplicated): our wedge/geometric keys + addressing head (config M4, §3.2) is exactly “geometric features, addressing read-out,” and at h48 it beats attention (1.00 vs 0.80, §4.1). Two of the paper's own pointers shape our queue: attention maps show <i>where</i>, not <i>why</i> (§7.4 — our weight readouts carry that label), and §6.4 names <i>global and long-range invariants as the next step</i> — the precise door our running-mean control closes in averaged-subspace form (§4.1). <span class="tag m">MEASURED</span></p>
   <h3>2.4 Lineage: deep thinking, equilibrium, ponder</h3>
-  <p>Bansal et al. (2022) show recurrent priors learn algorithms that extrapolate; Anil et al. (2022) characterize path independence; PonderNet (Banino et al., 2021) and deep equilibrium models (Bai et al., 2019) frame halting and fixed points. <span class="tag t">TBD</span>: a full related-work pass (state-space models, looped transformers, Coconut-style continuous CoT) before any submission.</p>
+  <p>Bansal et al. (2022) show recurrent priors learn algorithms that extrapolate; Anil et al. (2022) characterize <button class="dict-link" data-dict="d-pathindep">path independence</button>; PonderNet (Banino et al., 2021) and deep equilibrium models (Bai et al., 2019) frame halting and fixed points. <span class="tag t">TBD</span>: a full related-work pass (state-space models, looped transformers, Coconut-style continuous CoT) before any submission.</p>
   <h3>2.5 Where we sit</h3>
   <p>Huginn scales recurrence up; Grassmann rethinks mixing sideways; we scale the <i>question</i> down to a bench where every mechanism claim is lesion-testable. Our contribution, if any, is not an architecture but a finding about teachability: what ignites, what transmits, and what each failure mode is made of.</p>
 </section>
 
 <section class="card">
   <h2>3 · Method</h2>
-  <h3>3.1 Notation and terms</h3>
+  <h3 id="sec31">3.1 Notation and terms</h3>
   <p>Scale: h48 = hidden width 48, m96 = MLP width 96, d16 = attention width 16; r = unroll depth. Exams (all exact-match accuracies on disjoint-seed splits; full exam specs in §3.3): killA (held-out-line format, allowed combos), killHd (diag targets + allowed distractors), killDa (mirror), killHu (novel combos), in-dist, hard (4–6 pairs, depth curve r = 1..16). <b>ignite</b> ⇔ Eq. 3. Protocols: <b>cold copy</b> (D1, soft targets only), <b>fade</b> (D2+, graduated attention-supervision severance 100 → 50 → 0%). Failure signatures: severance-collapse (s42: killA 0.30 at severance), memorize-lean (killA up, Hd down; s43: 0.95/0.185), heuristic-lock (Hd up, killA down; M4 tier-2 drift 0.46 → 0.285 while Hd 0.21 → 0.565), <b>S (selection, “S-addressing”)</b>: the addressing read-out pathway that selects the bound value at test time; S-only = selection pathway with geometric keys ablated (vs geo-only: keys with selection lesioned). <b>fair homework</b> = randomized target slots.</p>
   <h3>3.2 Cores (src/tinynn)</h3>
-  <p>All cores share prelude → loop → coda plumbing with manual BPTT (Adam, grad-check exact to about 1e-9 before any training claim). <b>rec/seq:</b> pooled-MLP and gated running-state cores. <b>attn (A0):</b> single-head causal dot-product memory over past position states, gated retrieval, selection supervision −log w(target) on the final step. <b>geo (A1):</b> wedge/geometric keys, offsets (1, 2), no attention. <b>global (A2/M2):</b> adds a running-mean channel. <b>off2 (A3/M3/M4):</b> doubled wedge scaffolding; <b>M4</b> = off2 with no global channel (our best config). <b>S-only:</b> ablated student pathway probe. Query-head, gist labels, settle-training (grade every depth round), and PCGrad surgery are opt-in supervisions; every one is ablated somewhere in §4. <b>Reproducibility and compute:</b> CPU-only throughout, zero dependencies (plain JS, no WASM/WebGPU; runs in any modern browser). Timing probe on a 10-logical-core laptop CPU (16 GB RAM; browser exposes no model string, so hardware varies run to run — wall-clocks below are from the run ledger): geo h48, batch 16 → 10.8 ms/step, so a 3k-step seed ≈ 35 s. Counted steps in the named H2/D waves: 205k (≈ 37 min at probe rate); with the H/C/K/Phase-2/evo runs and evals, the entire program is single-digit CPU-hours on laptop-class hardware (≈0.1–0.2 kWh total, ≈0.05–0.1 kgCO₂e at average grid intensity). Pinned-cluster spec: n/a (browser-native).</p>
-  <h3>3.3 Tasks, homework, exams</h3>
-  <p>Associative recall over pairs (k, v) with a query marker Q: the model must emit the bound value. Training mixes short lines with 500 long gap-8 lines at <i>randomized</i> target slots (<b>fair homework</b> — randomizing the slot, not just the length, after we caught models solving a fixed hiding spot, §6). Exams, all with disjoint seeds from training: <b>in-dist</b>, <b>hard</b> (4–6 pairs, depth curve r = 1..16), <b>killA</b> (held-out-line format, allowed combos), <b>killHd</b> (diag targets + allowed distractors — the hard direction), <b>killDa</b> (mirror), <b>killHu</b> (novel combos), gap-1/gap-20 probes, position-0..8 sweeps. All kill scores are exact-match accuracies on their exam split. <b>Ignition bar (conjunctive):</b> killA ≥ 0.60 <i>and</i> killHd ≥ 0.55 — one cell alone is shortcut-compatible (high Hd with low killA = echo-the-key heuristic, §4.2). Proxy check: Spearman rank agreement between mild-200 proxy scores and full killHd across configs (bar 0.60).</p>
+  <p>All cores share prelude → loop → coda plumbing with manual BPTT (Adam, grad-check exact to about 1e-9 before any training claim). <b>rec/seq:</b> pooled-MLP and gated running-state cores. <b>attn (A0):</b> single-head causal dot-product memory over past position states, gated retrieval, <button class="dict-link" data-dict="d-saddr">selection supervision</button> −log w(target) on the final step. <b>geo (A1):</b> wedge/geometric keys, offsets (1, 2), no attention. <b>global (A2/M2):</b> adds a running-mean channel. <b>off2 (A3/M3/M4):</b> doubled wedge scaffolding; <b>M4</b> = off2 with no global channel (our best config). <b>S-only:</b> ablated student pathway probe. Query-head, gist labels, settle-training (grade every depth round), and PCGrad surgery are opt-in supervisions; every one is ablated somewhere in §4. <b>Reproducibility and compute:</b> CPU-only throughout, zero dependencies (plain JS, no WASM/WebGPU; runs in any modern browser). Timing probe on a 10-logical-core laptop CPU (16 GB RAM; browser exposes no model string, so hardware varies run to run — wall-clocks below are from the run ledger): geo h48, batch 16 → 10.8 ms/step, so a 3k-step seed ≈ 35 s. Counted steps in the named H2/D waves: 205k (≈ 37 min at probe rate); with the H/C/K/Phase-2/evo runs and evals, the entire program is single-digit CPU-hours on laptop-class hardware (≈0.1–0.2 kWh total, ≈0.05–0.1 kgCO₂e at average grid intensity). Pinned-cluster spec: n/a (browser-native).</p>
+  <h3 id="sec33">3.3 Tasks, homework, exams</h3>
+  <p>Associative recall over pairs (k, v) with a query marker Q: the model must emit the bound value. Training mixes short lines with 500 long gap-8 lines at <i>randomized</i> target slots (<button class="dict-link term" data-dict="d-fairhw">fair homework</button> — randomizing the slot, not just the length, after we caught models solving a fixed hiding spot, §6). Exams, all with disjoint seeds from training: <b>in-dist</b>, <b>hard</b> (4–6 pairs, depth curve r = 1..16), <b>killA</b> (held-out-line format, allowed combos), <b>killHd</b> (diag targets + allowed distractors — the hard direction), <b>killDa</b> (mirror), <b>killHu</b> (novel combos), gap-1/gap-20 probes, position-0..8 sweeps. All kill scores are exact-match accuracies on their exam split. <button class="dict-link" data-dict="d-ignite"><b>Ignition bar (conjunctive):</b></button> killA ≥ 0.60 <i>and</i> killHd ≥ 0.55 — one cell alone is shortcut-compatible (high Hd with low killA = echo-the-key heuristic, §4.2). Proxy check: Spearman rank agreement between mild-200 proxy scores and full killHd across configs (bar 0.60).</p>
   <div class="eq">ignite ⇔ killA ≥ 0.60 ∧ killHd ≥ 0.55&nbsp;&nbsp;(3)</div>
   <h3>3.4 Distillation protocol (Wave D family)</h3>
-  <p>Tutor: frozen hint-trained hybrid M4 (allowed-12 pool), load-verified at killA 1.00, Hd 0.88, Hu 1.00. Student: freshly-initialized same-arch net, same pool. <b>D1 cold:</b> soft targets only (+ entropy variants), 3k steps, fidelity read at 3k, extend arm to 6k. <b>D2 fade:</b> soft targets + attention supervision kept with probability 100% (steps 0–1k) → 50% (1–2k) → 0% (2–3k), checkpoint evals each stage. <b>D-rate:</b> same fade × 8 fresh seeds, ignition read at severance. <b>D-slow:</b> slower fade 100 → 75 → 50 → 25 → 0% over 5k on the three D-rate failures + one ignited control. Read rules pre-registered per wave (slow-transmission vs heuristic-lock vs memorize signatures). <span class="tag t">TBD</span>: G1→G2 chaining (retrain + save a G1 igniter as tutor; students on fresh seeds).</p>
+  <p>Tutor: frozen hint-trained hybrid M4 (allowed-12 pool), load-verified at killA 1.00, Hd 0.88, Hu 1.00. Student: freshly-initialized same-arch net, same pool. <button class="dict-link" data-dict="d-coldcopy"><b>D1 cold:</b></button> soft targets only (+ entropy variants), 3k steps, fidelity read at 3k, extend arm to 6k. <button class="dict-link" data-dict="d-fade"><b>D2 fade:</b></button> soft targets + attention supervision kept with probability 100% (steps 0–1k) → 50% (1–2k) → 0% (2–3k), checkpoint evals each stage. <b>D-rate:</b> same fade × 8 fresh seeds, ignition read at severance. <b>D-slow:</b> <button class="dict-link" data-dict="d-rescue">slower fade 100 → 75 → 50 → 25 → 0% over 5k</button> on the three D-rate failures + one ignited control. Read rules pre-registered per wave (slow-transmission vs heuristic-lock vs memorize signatures). <span class="tag t">TBD</span>: G1→G2 chaining (retrain + save a G1 igniter as tutor; students on fresh seeds).</p>
 </section>
 
 <section class="card">
@@ -116,31 +135,31 @@
     <tr><td>Running-mean control</td><td>Fair-slot retest: flat 0.365–0.455 (min–max across slots), kill 0.42 — no addressable signal; §6.4 of Zhang (2025) stays open in non-averaged form</td><td>replicated</td></tr>
   </table>
   <h3>4.2 The answer-only wall: time does not teach <span class="tag m">MEASURED</span></h3>
-  <p>Wave H (answer-only × M4/A1/S/A0, seeds 11–18): <b>0/32 ignited</b> (95% CI 0.00–0.11) — futility stop met (pre-registered rule: stop an answer-only arm at ≤2 ignitions per 32 runs), seeds 19–30 never launched. H2 (×3000, seeds 31–38): <b>0/32</b> (95% CI 0.00–0.11) — seed-means killA 0.33–0.37, Hd 0.41–0.47, Hu 0.20–0.25 (ranges across the four architectures); S-only NaN-collapses 8/8; proxy Spearman 0.527 below the 0.60 bar. Tier-2 to 10k steps: A0 trains to loss 0.000 with killA 0.64, Hd 0.02 (pure memorize); M4 drifts killA 0.46 → 0.285 while Hd 0.21 → 0.565 (heuristic-lock). The identity heuristic replicates (elevated Hd + low killA — echo-the-key scores diag targets and fails allowed), which is exactly why the bar (Eq. 3) is conjunctive. Verdict: a teaching problem, not a time problem.</p>
+  <p>Wave H (answer-only × M4/A1/S/A0, seeds 11–18): <button class="dict-link" data-dict="d-wall"><b>0/32 ignited</b></button> (95% CI 0.00–0.11) — futility stop met (pre-registered rule: stop an answer-only arm at ≤2 ignitions per 32 runs), seeds 19–30 never launched. H2 (×3000, seeds 31–38): <b>0/32</b> (95% CI 0.00–0.11) — seed-means killA 0.33–0.37, Hd 0.41–0.47, Hu 0.20–0.25 (ranges across the four architectures); S-only NaN-collapses 8/8; proxy Spearman 0.527 below the 0.60 bar. Tier-2 to 10k steps: A0 trains to loss 0.000 with killA 0.64, Hd 0.02 (<button class="dict-link" data-dict="d-wall">pure memorize</button>); M4 drifts killA 0.46 → 0.285 while Hd 0.21 → 0.565 (heuristic-lock). The identity heuristic replicates (elevated Hd + low killA — echo-the-key scores diag targets and fails allowed), which is exactly why the bar (Eq. 3) is conjunctive. Verdict: a teaching problem, not a time problem.</p>
   <h3>4.3 Transmission: cold copy fails, fading teaches (fragilely) (Table 2) <span class="tag m">MEASURED</span></h3>
   <table class="cost">
     <tr><th>Wave</th><th>Design</th><th>Outcome</th></tr>
     <tr><td>D0 gate</td><td>Hinted M4 on the H2 pool</td><td>killA 1.00 but Hd 0.05–0.425 — hinted ignition is pool-fragile (10-combo memorizes; 12-combo needed). Tutor repointed.</td></tr>
-    <tr><td>D1 cold</td><td>Soft targets, 9 fidelity runs + 2 extends to 6k</td><td>0/9 (95% CI 0.00–0.33; killA ~0.27–0.38 across fidelity runs, heuristic regime); extends flat — <b>null result:</b> cold copying transmits nothing.</td></tr>
+    <tr><td>D1 cold</td><td>Soft targets, 9 fidelity runs + 2 extends to 6k</td><td>0/9 (95% CI 0.00–0.33; killA ~0.27–0.38 across fidelity runs, heuristic regime); extends flat — <b>null result:</b> <button class="dict-link" data-dict="d-coldcopy">cold copying transmits nothing</button>.</td></tr>
     <tr><td>D2 fade</td><td>attnAux 100 → 50 → 0% × seeds 32, 33</td><td>s32 maintains ignition at 50% (1.00/0.92/1.00) then collapses at severance (0.225/0.44/0.045); s33 maintains ignition (1.00/0.565/1.00, ID 0.90) — first hint-free ignition via transmission. 1/2.</td></tr>
-    <tr><td>D-rate</td><td>Same fade × 8 fresh seeds 41–48</td><td><b>5/8 ignited</b> (95% Wilson CI 0.31–0.86; s41 1.00/0.71, s44 1.00/0.985, s45 1.00/0.87, s46 1.00/0.74, s47 1.00/0.66). Failures: s42 full collapse (0.30/0.38), s43 memorize-lean (0.95/0.185), s48 killA-collapse (0.245/0.62). Combined fade record 6/10 (95% CI 0.31–0.83).</td></tr>
-    <tr><td>D-slow</td><td>Fade 100→75→50→25→0% over 5k on the 3 failures + control s41</td><td>s48 <b>rescued</b> (1.00/1.00/1.00); s42 collapse merely delayed one stage; s43 <i>worse</i> under slow fade; control maintains ignition (1.00/0.56/1.00). Schedule is <i>a</i> lever, not <i>the</i> lever.</td></tr>
+    <tr><td>D-rate</td><td>Same fade × 8 fresh seeds 41–48</td><td><button class="dict-link" data-dict="d-fade"><b>5/8 ignited</b></button> (95% Wilson CI 0.31–0.86; s41 1.00/0.71, s44 1.00/0.985, s45 1.00/0.87, s46 1.00/0.74, s47 1.00/0.66). Failures: s42 full collapse (0.30/0.38), s43 memorize-lean (0.95/0.185), s48 killA-collapse (0.245/0.62). Combined fade record 6/10 (95% CI 0.31–0.83).</td></tr>
+    <tr><td>D-slow</td><td>Fade 100→75→50→25→0% over 5k on the 3 failures + control s41</td><td>s48 <button class="dict-link" data-dict="d-rescue"><b>rescued</b></button> (1.00/1.00/1.00); s42 collapse merely delayed one stage; s43 <i>worse</i> under slow fade; control maintains ignition (1.00/0.56/1.00). Schedule is <i>a</i> lever, not <i>the</i> lever.</td></tr>
   </table>
   <p class="hidden-note">Run records: scratch/h2/waveD1.js, waveD2.js, waveDrate.js, waveDslow.js + results JSONs. G1→G2 needs a retrain-and-save step first (waves save evals only) — spec'd in §8.</p>
 </section>
 
 <section class="card">
   <h2>5 · Discussion</h2>
-  <p><b>Teaching, not time.</b> The same arch + data that ignites hinted (M4 1.00, attention about 0.80 fair) never ignites answer-only — so arch-sufficiency is established and the residual is the signal: supervision content, not steps. <b>Transmission regimes.</b> Cold copying falls into the echo-heuristic attractor (fidelity never transmits); graduated severance transmits for a majority (6/10) with three distinct failure signatures — severance-fragile (collapse), memorize-prone (killA up, Hd down), and slow-rescuable. Slower fading helps one, harms one, delays one: failure modes differ by seed, so no single schedule is optimal. <b>What the mechanism says.</b> Winners deploy S-addressing at test time with geometric keys as training scaffolding; the global channel is exactly null (not poison — zero grads by construction); off2 doubles the wedge signal and overwhelms the attractor. <b>What this is not.</b> Not a claim about scale (h48 only), not about language (one task family), not about drive (we build ability-to-learn; goal-generation stays outside the model).</p>
+  <p><button class="dict-link" data-dict="d-thesis"><b>Teaching, not time.</b></button> The same arch + data that ignites hinted (M4 1.00, attention about 0.80 fair) never ignites answer-only — so arch-sufficiency is established and the residual is the signal: supervision content, not steps. <button class="dict-link" data-dict="d-failures"><b>Transmission regimes.</b></button> Cold copying falls into the echo-heuristic attractor (fidelity never transmits); graduated severance transmits for a majority (6/10) with three distinct failure signatures — severance-fragile (collapse), memorize-prone (killA up, Hd down), and slow-rescuable. Slower fading helps one, harms one, delays one: failure modes differ by seed, so no single schedule is optimal. <button class="dict-link" data-dict="d-mechanism"><b>What the mechanism says.</b></button> Winners deploy S-addressing at test time with geometric keys as training scaffolding; the global channel is exactly null (not poison — zero grads by construction); off2 doubles the wedge signal and overwhelms the attractor. <button class="dict-link" data-dict="d-scope"><b>What this is not.</b></button> Not a claim about scale (h48 only), not about language (one task family), not about drive (we build ability-to-learn; goal-generation stays outside the model).</p>
 </section>
 
 <section class="card">
   <h2>6 · Missteps and retractions</h2>
   <p>Kept, because the log is the method — read it as the ablation record: each retraction is a control that constrains the surviving claims. Each item names what replaced it.</p>
   <ul>
-    <li><b>Positional shortcut (F1).</b> Position-fixed training taught “answer = first pair” (pos0 1.00, elsewhere chance) — every earlier 1.00 measured the hiding spot. Replaced by randomized-slot fair homework; F2/F3 re-measured honestly.</li>
+    <li><button class="dict-link" data-dict="d-posshortcut"><b>Positional shortcut (F1).</b></button> Position-fixed training taught “answer = first pair” (pos0 1.00, elsewhere chance) — every earlier 1.00 measured the hiding spot. Replaced by randomized-slot fair homework; F2/F3 re-measured honestly.</li>
     <li><b>E1b pair-specificity.</b> Held-out-only killH 0.00 looked like a second wall; under fair slots it was a shortcut-regime artifact (K/K2: Hd 0.79–0.88 both arches).</li>
-    <li><b>“W-term shrank” / “global noise + uniform grads.”</b> Neither reproduced on measurement. Replaced by the NULL proof (noG ≡ full; 1.2e-9 cross-run weight identity; softmax cancellation).</li>
+    <li><b>“W-term shrank” / “global noise + uniform grads.”</b> Neither reproduced on measurement. Replaced by the <button class="dict-link" data-dict="d-nullproof">NULL proof</button> (noG ≡ full; 1.2e-9 cross-run weight identity; softmax cancellation).</li>
     <li><b>Hd/Da gloss swap.</b> Prose labels were backwards; scripts ruled. Correct reading: novel targets hard, alien distractors harmless.</li>
     <li><b>PCGrad +0.08.</b> Best draw, not typical (+0.03–0.05 same-data); kept opt-in, default stays matched-data + fused.</li>
     <li><b>B1 trains 4× faster.</b> Browser wall clock, uninterpretable — retracted as a claim, kept as a timing anomaly.</li>
@@ -155,9 +174,9 @@
   <p>Taken together, the limits bound the claim, not just the data: every positive result is conditional on h48 scale, single-digit seeds, and one task family, and the three transmission failure signatures (collapse, memorize-lean, killA-collapse) show that no single schedule generalizes even within this regime. What follows lists each limit with what would lift it.</p>
   <ul>
     <li><b>Scale.</b> Everything at h48/d16, one task family. Only the null claims are scale-free. Scaling hypothesis + field test: <span class="tbd">TBD</span>.</li>
-    <li><b>Seeds.</b> Single-digit n everywhere; ignition is bimodal (seed 7 the maximum in all four arches). Proportions carry 95% Wilson CIs meanwhile; error bars need 8+ seeds per claim: <span class="tbd">TBD</span>.</li>
+    <li><b>Seeds.</b> Single-digit n everywhere; <button class="dict-link" data-dict="d-bimodal">ignition is bimodal</button> (seed 7 the maximum in all four arches). Proportions carry 95% Wilson CIs meanwhile; error bars need 8+ seeds per claim: <span class="tbd">TBD</span>.</li>
     <li><b>Transfer.</b> No cross-domain test (held-out novel combos within-family only). Family meta-overfitting is the residual hole; cross-domain (16-combo → 64-combo, new encoding) is the closer: <span class="tbd">TBD</span>.</li>
-    <li><b>Generations.</b> G1→G2 unrun; whether teaching compounds or rots is the hinge of the whole program: <span class="tbd">TBD (spec'd §8)</span>.</li>
+    <li><b>Generations.</b> G1→G2 unrun; <button class="dict-link" data-dict="d-g1g2">whether teaching compounds or rots is the hinge of the whole program</button>: <span class="tbd">TBD (spec'd §8)</span>.</li>
     <li><b>Mechanism.</b> Why s43 memorizes while s48 rescues — no account yet. Gradient-SNR follow-up parked: <span class="tbd">TBD</span>.</li>
     <li><b>Related work.</b> State-space models, looped transformers, continuous-CoT (Coconut-style) pass missing: <span class="tbd">TBD</span>.</li>
     <li><b>Reproducibility.</b> Code + run records ship in-repo (src/tinynn, Appendices); zero dependencies, browser-native. Timing probe: geo h48, batch 16 → 10.8 ms/step on a 10-core laptop CPU, 3k-step seed ≈ 35 s, whole program ≈ 1–3 CPU-hours. Pinned-cluster spec: n/a.</li>
@@ -168,12 +187,12 @@
 
 <section class="card">
   <h2>8 · What next: the road to a nursery that builds models</h2>
-  <p><b>This section reports no results; it maps the road.</b> Transmission (§4.3) is one motion: a teacher installing one skill in one student. The paper's declared endpoint is the whole job — <b>a nursery that, given an assigned topic plus the open world, creates from scratch a full model that learns it</b> (architecture, weights, curriculum, exams; learners are disposable proof, the nursery is the product). Each stage below inherits this paper's bars and adds its own; all are <span class="tag t">TBD</span> until runs exist. Full specs live in src/README.md; this is the map.</p>
-  <p><b>8.1 G1→G2 (pre-registered, next run).</b> Fast fade (5/8 validated; slow helped 1/3, hurt 1, taxed the control). Steps: retrain a G1 igniter under fast fade, save weights as tutor, run G2 students on fresh seeds; pass = hint-free ignition at the §3.3 bars. If teaching compounds, the loop is self-sustaining; if it rots, the failure signature decides the redesign (null-copy = new fade; collapse = stability-gated stages; memorize = delta/contrastive supervision).</p>
-  <p><b>8.2 Harvest.</b> Port prior art into the bench (self-distillation traces, curriculum-extraction ordering, skill/mistake banks, iterated-teaching warnings, self-play curricula). Bar: each port must move a bench number or be cut. <span class="tag t">TBD</span></p>
-  <p><b>8.3 Staircase.</b> The nursery proposes its own lesson order, gated by mastery (advance ≥0.95 over variants, bridge below 0.60), with red-team bridge tasks and a compute tax per rung. Bar: a nursery-taught student beats a fixed-curriculum baseline on novel variants at similar-or-less cost. <span class="tag t">TBD</span></p>
-  <p><b>8.4 Breeding.</b> Evolve populations of small topologies + curricula; fitness = blank-brain mastery × leanness on held-out symbols and shifted boards. Bar: bred lineages ignite faster than hand-designed ones or breeding dies. <span class="tag t">TBD</span></p>
-  <p><b>8.5 The nursery finale.</b> Collation from the messy open world (no curated stack), a search tool, a consult budget with humans-as-sources, multi-domain bench, field pilots (chess, Pokémon teambuilding, proof tasks), and graduation exams at the <i>nursery</i> level: nursery-taught vs baseline-taught students on novel variants, plus time-and-cost to curriculum. Bar: match-or-close to a skilled-human curriculum, then exceed it. <span class="tag t">TBD</span></p>
+  <p><b>This section reports no results; it maps the road.</b> Transmission (§4.3) is one motion: a teacher installing one skill in one student. The paper's declared endpoint is the whole job — <b>a nursery that, given an assigned topic plus the open world, <button class="dict-link" data-dict="d-nursery">creates from scratch a full model that learns it</button></b> (architecture, weights, curriculum, exams; learners are disposable proof, the nursery is the product). Each stage below inherits this paper's bars and adds its own; all are <span class="tag t">TBD</span> until runs exist. Full specs live in src/README.md; this is the map.</p>
+  <p><b>8.1 G1→G2 (pre-registered, next run).</b> Fast fade (5/8 validated; slow helped 1/3, hurt 1, taxed the control). Steps: <button class="dict-link" data-dict="d-g1g2">retrain a G1 igniter under fast fade, save weights as tutor, run G2 students on fresh seeds</button>; pass = hint-free ignition at the §3.3 bars. If teaching compounds, the loop is self-sustaining; if it rots, the failure signature decides the redesign (null-copy = new fade; collapse = stability-gated stages; memorize = delta/contrastive supervision).</p>
+  <p><b>8.2 Harvest.</b> <button class="dict-link" data-dict="d-harvest">Port prior art into the bench</button> (self-distillation traces, curriculum-extraction ordering, skill/mistake banks, iterated-teaching warnings, self-play curricula). Bar: each port must move a bench number or be cut. <span class="tag t">TBD</span></p>
+  <p><b>8.3 Staircase.</b> The nursery <button class="dict-link" data-dict="d-staircase">proposes its own lesson order</button>, gated by mastery (advance ≥0.95 over variants, bridge below 0.60), with red-team bridge tasks and a compute tax per rung. Bar: a nursery-taught student beats a fixed-curriculum baseline on novel variants at similar-or-less cost. <span class="tag t">TBD</span></p>
+  <p><b>8.4 Breeding.</b> <button class="dict-link" data-dict="d-breeding">Evolve populations of small topologies + curricula</button>; fitness = blank-brain mastery × leanness on held-out symbols and shifted boards. Bar: bred lineages ignite faster than hand-designed ones or breeding dies. <span class="tag t">TBD</span></p>
+  <p><b>8.5 The nursery finale.</b> Collation from the messy open world (no curated stack), a search tool, a consult budget with humans-as-sources, multi-domain bench, field pilots (chess, Pokémon teambuilding, proof tasks), and graduation exams at the <i>nursery</i> level: nursery-taught vs baseline-taught students on novel variants, plus time-and-cost to curriculum. Bar: <button class="dict-link" data-dict="d-nursery">match-or-close to a skilled-human curriculum, then exceed it</button>. <span class="tag t">TBD</span></p>
 </section>
 
 <section class="card">
@@ -360,6 +379,268 @@
   <div class="eli5"><b>ELI5 — read this before pressing train:</b> we grow a tiny brain in your browser and teach it baby puzzles. <b>Loss</b> = how wrong it is (watch it fall). <b>Accuracy</b> = how often it's right. The <b>hard set</b> = puzzles it never studied (the real exam). A rising <b>depth curve</b> = thinking longer helps. <b>Adapt</b> = learn a new puzzle fast using the old one (learning <i>how</i> to learn). <b>Attention</b> = a spotlight that looks back at earlier words. <b>Supervision</b> = teacher hints during thinking, not just a final grade. <b>Binding</b> = remembering Milo goes with the red cup, so when Milo is asked about later, you fetch red. <b>Geometry (the 2d ruler — pick it in the task box):</b> neighbors compare arrows instead of using the spotlight; it is <i>supposed</i> to fail questions asked from far away. The <b>kill set</b> = one name at the very start, question at the very end. <b>Carry (the 2d hope — measured 2026-11-08):</b> gossip <i>plus</i> the notebook, graded on never dropping the note. Result: the plain notebook matched it (in-dist 0.86 vs 0.73!) and <i>back then</i> NOTHING crossed long gaps (kill ~0.36, gap-20 ~0.33 for all) — but that was the unfair-homework era (practice short, test long). Retested on fair homework, even the plain notebook reaches ~0.90 and attention/choosy hit 1.00. The gossip-drag verdict is mismatch-era and unretested on fair homework. The <b>campfire (measured too):</b> a running average of all thoughts, whispered into every step — also failed <i>back then</i> (kill 0.32, gap-20 0.32). NOT retested on fair homework yet — the mush verdict is mismatch-era and may not survive. One run could settle it. <b>Choosy fire (measured too):</b> the net learned its <i>own</i> gate — which thoughts to pin to the board, which to let blow past. The gate moved (some pins nearly shut, some wide open) — but the wall didn't budge <i>then</i>: kill 0.38, gap-20 0.32. On position-fixed homework the choosy+question-reader combo scored 1.00 at every depth — then the hiding-spot test exposed it: with slots randomized it falls to ~chance. The gate learned <i>where</i>, not <i>what</i>. Retracted; attention stands alone. <b>X-ray (fresh-eyes test, decisive):</b> froze the brain mid-thought and checked — the note <i>is</i> written perfectly (100%), but — on unfair homework — dies crossing the room; the reader reads faithfully, there's just nothing left. That was a <i>practice</i> problem wearing a carrying-problem costume: with long practice, transit survives (probe 1.00, kill 1.00). <b>Settling test (also decisive):</b> froze the brain and let the question rattle around inside for 8 extra rounds — nothing improved (still ~0.30). Thinking only finds answers if the brain was <i>trained</i> to settle, not just trained to answer. (Stands — but whether settle-training adds anything <i>on top of</i> fair homework is untested.) <b>100-round check (also flat):</b> rolled 100 times while shouting the question louder each round — still nothing (early wiggles faded by round 100). Not slow — just unfair homework. On fair homework the desert blooms (gap-20: 1.00). The newest paper's idea (now a lab experiment): skip the spotlight and just measure how much neighboring arrows disagree. <b>New dragon (2026-11-08):</b> pairs Milo never saw: 0.00 — memorized cards, no lookup trick. Gameplan in §5.</div>
 </section>
 </div>
+
+<div id="dictPanelEl" class="dict-panel" hidden>
+  <div class="dict-head">
+    <span id="dictTitleEl" class="dict-title">Note</span>
+    <button id="dictCloseEl" class="dict-close" aria-label="Close note">✕</button>
+  </div>
+  <div id="dictTabsEl" class="dict-tabs" role="tablist"></div>
+  <div id="dictBodyEl" class="dict-body"></div>
+</div>
+
+<script>
+// ---------- paper dictionary: Genius-style clickable notes, 1–3 levels each ----------
+// Levels per entry: professional (precise, with bars/pointers), simple (plain
+// English), eli5 (analogy/toy example). Entries carry 1–3 levels as the content
+// decides — terms often need just one, sentences and paragraphs up to three.
+// To add an entry: add a key below, then wrap the span in
+// <button class="dict-link [term]" data-dict="key">text</button>.
+window.TeachingLab = window.TeachingLab || {};
+window.TeachingLab.dict = {
+  "d-testtime": {
+    title: "test-time scaling",
+    professional: "Spending more compute at query time to raise capability: more parameters, more training data, or more thinking per question. This draft tests the third axis at bench scale (h48, CPU, thousands of params).",
+    simple: "Models can get better three ways: bigger brain, more studying, or thinking longer about each question. This paper is about the third one — thinking longer."
+  },
+  "d-latent": {
+    title: "thinks without writing",
+    professional: "Latent recurrence: a block R iterates on continuous states (s = R(e, s_prev)) with the input re-injected every step, unrolled further at test time than training (Eq. 1). Pays FLOPs instead of tokens — no written chain-of-thought needed.",
+    simple: "Instead of writing out its reasoning in words, the model thinks quietly inside its own numbers, looping over the same step several times. Harder to read, cheaper to run.",
+    eli5: "Like thinking in your head instead of thinking out loud. You still think hard, you just don't use any paper."
+  },
+  "d-addressable": {
+    title: "genuine addressable lookup",
+    professional: "Retrieving the value bound to a key at an arbitrary position on demand — position-independent, surviving fair-slot randomization. Passes killA and killHd jointly (Eq. 3), not one metric alone. Opposite of positional shortcut or memorized pairs.",
+    simple: "Looking up the right answer no matter where it hides in the line — not just remembering favorite hiding spots.",
+    eli5: "Like finding your friend in hide-and-seek no matter where they hide — not just checking behind the same tree every time."
+  },
+  "d-killset": {
+    title: "kill set",
+    def: "sec31",
+    defLabel: "§3.1",
+    professional: "Held-out exam that kills shortcut models: one name at the start of a long line, the question at the very end. Exact-match accuracy on disjoint-seed splits. killA = held-out-line format with allowed combos; killHd = diagonal targets with allowed distractors (the hard direction); full specs in §3.3."
+  },
+  "d-coldcopy": {
+    title: "cold copy",
+    def: "sec31",
+    defLabel: "§3.1",
+    professional: "Wave D1 protocol: a frozen hint-trained tutor supervises a fresh student with soft targets only — no attention-guidance signal. 9 fidelity runs + 2 extends to 6k steps: 0/9 transmitted (killA ~0.27–0.38). Null result: answers alone transmit nothing.",
+    simple: "Just showing the student the right answers, with no hints about how to find them. It never works — 0 out of 9.",
+    eli5: "Like giving someone the answers to a maze without showing the path. They memorize those answers but can't solve a new maze."
+  },
+  "d-huginn": {
+    title: "Huginn (latent recurrence)",
+    professional: "Geiping et al. 2025: 3.5B-parameter depth-recurrent Transformer on 800B tokens; triplet prelude→core→coda with the input re-injected every step from a random start (Eq. 1); random iteration count per forward pass with truncated backprop; unrolled further at test time, up to ~50B-equivalent behavior.",
+    simple: "A big model that thinks by looping over its own thoughts instead of writing them down — and can loop extra times on hard questions.",
+    eli5: "Like re-reading a tricky paragraph as many times as you need, inside your head, without writing anything down."
+  },
+  "d-verbalcot": {
+    title: "verbalized test-time compute",
+    professional: "Chain-of-thought (Wei 2022), budget-forcing s1 (Muennighoff 2025), o1 (OpenAI 2024): longer written reasoning trained on long demonstrations; pays tokens instead of FLOPs — the cost our live demo concedes in Appendix B.",
+    simple: "Making models smarter by making them write longer essays. It works, but every word costs."
+  },
+  "d-grassmann": {
+    title: "Grassmann flows",
+    professional: "Zhang 2025: reinterprets attention as tensor lifting (opaque by structure) and replaces it with flows on Gr(2,r) via Plücker coordinates (Eq. 2) — no attention matrix anywhere. A 13–18M-param LM lands within 10–15% of a matched Transformer on Wikitext-2. Our wedge/geometric keys + addressing head is this brief at bench scale.",
+    simple: "What if models don't need the spotlight (attention) at all, and can mix information with geometry instead?",
+    eli5: "Like passing notes with shapes instead of pointing a flashlight — the message still gets across."
+  },
+  "d-pathindep": {
+    title: "path independence",
+    professional: "From the deep-thinking literature (Bansal/Anil 2022): recurrence stabilized by input re-injection plus random init, so different iteration counts converge compatibly. We inherit both constraints.",
+    simple: "Training the loop so it settles the same way no matter how many laps it runs."
+  },
+  "d-saddr": {
+    title: "S-addressing",
+    def: "sec31",
+    defLabel: "§3.1",
+    professional: "The addressing read-out pathway selecting the bound value at test time. Lesions: S-only ≈ full (M3 0.819 vs 0.823; M4 1.00), geo-only collapses (0.37–0.39) — winners address at test time; geometric keys are training scaffolding.",
+    simple: "The part that points at the answer when the question arrives. Cut everything else and it still works; cut this and it breaks."
+  },
+  "d-fairhw": {
+    title: "fair homework",
+    def: "sec33",
+    defLabel: "§3.3",
+    professional: "Training with randomized target slots (mixed short lines + 500 long gap-8 lines), adopted after F1 showed fixed slots teach the hiding spot. Re-measured honestly in F2/F3.",
+    simple: "Hiding the answer in a different spot every time, so the model must actually look.",
+    eli5: "Like hiding the cookies in a new place each round instead of the same jar."
+  },
+  "d-dseries": {
+    title: "Wave D family",
+    professional: "D0 gate (tutor check) → D1 cold (soft targets only, 0/9) → D2 fast fade (100→50→0%, 1/2) → D-rate (same fade ×8 seeds, 5/8) → D-slow (100→75→50→25→0% over 5k on the failures, rescues 1 of 3). Read rules pre-registered per wave.",
+    simple: "Five experiments in order: check the teacher, try answers-only, try fading help, repeat on 8 fresh students, then try slower fading on the failures.",
+    eli5: "First make sure the teacher knows it, then teach with no help, then with training wheels, then with more kids, then slower wheels for the ones who fell."
+  },
+  "d-wall": {
+    title: "the answer-only wall",
+    professional: "H (seeds 11–18) + H2 (×3000, seeds 31–38): 0/32 ignited each (95% CI 0.00–0.11); tier-2 to 10k memorizes (A0 killA 0.64, Hd 0.02) or heuristic-locks (M4 drift 0.46→0.285 while Hd 0.21→0.565). Pre-registered futility stop (≤2/32) met; seeds 19–30 never launched.",
+    simple: "Practicing answers alone never teaches the trick — 0 out of 32, twice. Longer practice just memorizes or learns cheats.",
+    eli5: "Doing the same worksheet 10,000 times doesn't teach reading — you just memorize the page."
+  },
+  "d-failures": {
+    title: "three failure signatures",
+    professional: "Severance-collapse (s42: killA 0.30 at severance), memorize-lean (s43: 0.95/0.185), killA-collapse (s48: 0.245/0.62, slow-rescuable to 1.00/1.00/1.00). Modes differ by seed — no single schedule is optimal.",
+    simple: "Three ways teaching fails: crash the moment help stops, memorize without understanding, or collapse on part of the test.",
+    eli5: "Training wheels off: one kid falls over, one only rides the old street, one forgets how to pedal — then remembers with slower wheels."
+  },
+  "d-rescue": {
+    title: "slow-rescuable (s48)",
+    professional: "Slow fade (100→75→50→25→0% over 5k) rescues s48 to 1.00/1.00/1.00 while s42 merely delays collapse and s43 worsens. Schedule is a lever, not the lever.",
+    simple: "Slower help-removal saved one student, did nothing for another, hurt a third. Fading speed matters — but it isn't the whole answer."
+  },
+  "d-mechanism": {
+    title: "what the mechanism says",
+    professional: "Winners deploy S-addressing at test time with geometric keys as training scaffolding; the global-mean channel is exactly null (noG ≡ full, 1.2e-9 identity, zero grads by softmax cancellation); off2 doubles the wedge signal and overwhelms the attractor.",
+    simple: "The winners point at test time, used geometry only to learn how, and the extra averaging channel did literally nothing."
+  },
+  "d-scope": {
+    title: "what this is not",
+    professional: "Not a claim about scale (h48 only), not about language (one task family), not about drive (ability-to-learn only; goal-generation stays outside the model).",
+    simple: "Small models, one puzzle type — and we teach skill, never goals or wants."
+  },
+  "d-posshortcut": {
+    title: "positional shortcut (F1)",
+    professional: "Position-fixed training taught 'answer = first pair' (pos0 1.00, elsewhere chance) — every earlier 1.00 measured the hiding spot. Replaced by randomized-slot fair homework; F2/F3 re-measured honestly.",
+    simple: "The model wasn't reading — it had memorized that the answer sits in the first seat.",
+    eli5: "Like always picking door number one — works until someone moves the prize."
+  },
+  "d-nullproof": {
+    title: "NULL proof (global channel)",
+    professional: "noG lesion ≡ full everywhere; global-block weights identical to 1.2e-9 across divergent runs (shared key component cancels in softmax → zero grads). Not poison — exactly null by construction.",
+    simple: "The extra averaging wire carried zero signal — proven, not guessed."
+  },
+  "d-bimodal": {
+    title: "bimodal ignition",
+    professional: "Seed 7 the maximum in all four arches (C1 seed-means: M4 0.799, A1 0.766, A0 0.553, M3 0.531); single-digit n everywhere, so proportions carry Wilson CIs and real error bars need 8+ seeds.",
+    simple: "Some starting dice rolls learn far better than others — luck of the draw sits inside every number."
+  },
+  "d-g1g2": {
+    title: "G1→G2 (the hinge)",
+    professional: "Unrun: retrain a G1 igniter under fast fade, save weights as tutor, run G2 students on fresh seeds; pass = hint-free ignition at §3.3 bars. Whether teaching compounds or rots decides if the loop is self-sustaining.",
+    simple: "The next experiment: can a taught student become a teacher? If yes, teaching sustains itself.",
+    eli5: "Can the kid who learned with training wheels now teach the next kid?"
+  },
+  "d-harvest": {
+    title: "harvest",
+    professional: "Port prior art into the bench (self-distillation traces, curriculum-extraction ordering, skill/mistake banks, iterated-teaching warnings, self-play curricula). Bar: each port must move a bench number or be cut.",
+    simple: "Raiding the library: steal every teaching trick ever published, keep only what moves our numbers."
+  },
+  "d-staircase": {
+    title: "staircase",
+    professional: "The nursery proposes its own lesson order: advance at ≥0.95 over variants, bridge below 0.60; red-team bridge tasks under OOD constraints with a compute-tax hard-kill per rung.",
+    simple: "The nursery writes its own textbook — easy lessons first, harder ones only when mastered.",
+    eli5: "Like levels in a game: beat level 1 properly before level 2 unlocks."
+  },
+  "d-breeding": {
+    title: "breeding",
+    professional: "Evolve populations of small topologies + curricula; fitness = blank-brain mastery × leanness on held-out symbols and shifted boards. Bar: bred lineages ignite faster than hand-designed ones, or breeding dies.",
+    simple: "Breeding tiny brains like racehorses: keep the small fast learners, cull the rest."
+  },
+  "d-nursery": {
+    title: "the nursery (finale)",
+    professional: "Given an assigned topic plus the open world, build brain, lessons, and exams from scratch and deliver an AI that learns it. Diploma = Quality (match-or-close vs a frozen rival on novel variants) + Budget (all spend under cap); proven by synthesis, format-symmetry, and zero-knowledge-transfer probes plus field pilots (chess, Pokémon, proofs, profiling).",
+    simple: "The end goal: name a topic, and it builds a whole learner from nothing — brain, lessons, and tests — cheaply enough to count.",
+    eli5: "Like a school that builds itself: new subject in, whole classroom out."
+  },
+  "d-ignite": {
+    title: "ignite",
+    def: "sec31",
+    defLabel: "§3.1",
+    professional: "ignite ⇔ killA ≥ 0.60 and killHd ≥ 0.55 jointly (Eq. 3). Both bars must pass on the same seed — the conjunction blocks single-metric luck (memorize-lean passes killA only, heuristic-lock passes Hd only)."
+  },
+  "d-thesis": {
+    title: "ignition is a teaching problem",
+    professional: "Answer-only training at h48 never ignites: 0/32 across four architectures (95% CI 0.00–0.11), and 10k-step tier-2 runs memorize (killA 0.64, Hd 0.02) or heuristic-lock instead of teaching. Transmission via staged hint fading ignites 5/8 (95% CI 0.31–0.86). Verdict: the missing ingredient is teaching, not steps.",
+    simple: "Just practicing longer doesn't teach the trick — the models memorize answers or learn cheats instead. They need a teacher that shows them how, then slowly stops helping.",
+    eli5: "Like learning to ride a bike: pedaling longer alone doesn't teach balance. Training wheels that come off bit by bit do — but they still wobble sometimes."
+  },
+  "d-fade": {
+    title: "staged hint fading",
+    def: "sec31",
+    defLabel: "§3.1",
+    professional: "A frozen hint-trained teacher supervises a hint-free student while supervision graduates to zero (fast fade 100→50→0%; slow fade 100→75→50→25→0% over 5k steps). Fast fade: 5/8 ignite; slow fade rescues 1 of 3 failures with 0 harm. Fragile: severance-collapse (s42), memorize-lean (s43), slow-rescuable (s48).",
+    simple: "A teacher that knows the trick watches the student, then helps less and less until the student does it alone. Works a bit more than half the time — some students crash the moment help stops.",
+    eli5: "Like training wheels coming off one bit at a time. Most kids ride on — one falls right when the last wheel comes off."
+  }
+};
+(function(){
+  const dict = window.TeachingLab.dict;
+  const panel = document.getElementById("dictPanelEl");
+  const titleEl = document.getElementById("dictTitleEl");
+  const tabsEl = document.getElementById("dictTabsEl");
+  const bodyEl = document.getElementById("dictBodyEl");
+  const closeEl = document.getElementById("dictCloseEl");
+  if (!panel) return;
+  const ORDER = [["professional","Professional"],["simple","Simple"],["eli5","ELI5"]];
+  let current = null, level = null;
+  function available(id){
+    const e = dict[id]; if (!e) return [];
+    return ORDER.filter(([k]) => e[k]);
+  }
+  function render(){
+    const e = dict[current]; if (!e) return;
+    titleEl.textContent = e.title || current;
+    tabsEl.innerHTML = "";
+    for (const [k, label] of available(current)) {
+      const b = document.createElement("button");
+      b.className = "dict-tab";
+      b.textContent = label;
+      b.setAttribute("role","tab");
+      b.setAttribute("aria-selected", k === level ? "true" : "false");
+      b.onclick = (ev) => { if (ev && ev.stopPropagation) ev.stopPropagation(); level = k; render(); };
+      tabsEl.appendChild(b);
+    }
+    const tag = level === "professional" ? "PROFESSIONAL" : level === "simple" ? "SIMPLE ENGLISH" : "ELI5";
+    bodyEl.innerHTML = "";
+    const t = document.createElement("div");
+    t.className = "lvl-tag"; t.textContent = tag;
+    const p = document.createElement("div");
+    p.textContent = e[level];
+    bodyEl.appendChild(t); bodyEl.appendChild(p);
+    if (e.def) {
+      const j = document.createElement("button");
+      j.className = "dict-def-link";
+      j.textContent = "Defined in " + (e.defLabel || "§3.1") + " — jump to definition";
+      j.onclick = (ev) => {
+        if (ev && ev.stopPropagation) ev.stopPropagation();
+        const target = document.getElementById(e.def);
+        close();
+        if (!target) return;
+        setTimeout(() => {
+          target.scrollIntoView({ behavior: "auto", block: "center" });
+          target.classList.add("sec-flash");
+          setTimeout(() => target.classList.remove("sec-flash"), 2200);
+        }, 240);
+      };
+      bodyEl.appendChild(j);
+    }
+  }
+  function open(id){
+    if (!dict[id]) return;
+    const avail = available(id);
+    if (!avail.length) return;
+    current = id;
+    // default: Simple when present, else Professional (terms with 1 level land here)
+    level = dict[id].simple ? "simple" : avail[0][0];
+    panel.hidden = false;
+    requestAnimationFrame(() => panel.classList.add("open"));
+    render();
+  }
+  function close(){
+    panel.classList.remove("open");
+    setTimeout(() => { panel.hidden = true; }, 220);
+    current = null;
+  }
+  document.addEventListener("click", (ev) => {
+    const link = ev.target.closest && ev.target.closest(".dict-link");
+    if (link && link.dataset && link.dataset.dict) { open(link.dataset.dict); return; }
+    if (!panel.hidden && !panel.contains(ev.target)) close();
+  });
+  document.addEventListener("keydown", (ev) => { if (ev.key === "Escape" && !panel.hidden) close(); });
+  closeEl.addEventListener("click", close);
+})();
+</script>
 
 <script src="src/offline-solver.js"></script>
 <script src="src/inference.js"></script>

@@ -75,5 +75,5 @@
     return hasPerchance() ? "online (Perchance LLM)" : "offline (local)";
   }
 
-  window.TeachingLab = { ask, mode, hasPerchance, forceOffline: false };
+  window.TeachingLab = Object.assign(window.TeachingLab || {}, { ask, mode, hasPerchance, forceOffline: false });
 })();
