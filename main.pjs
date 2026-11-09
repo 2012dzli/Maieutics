@@ -1,0 +1,25 @@
+// Teaching Small Models to Learn — program: can small nets be taught genuine rule-learning?
+// Paper draft v0.1 in index.html (bench: staged hint fading distills addressable lookup).
+
+generateText = {import:ai-text-plugin}
+
+title
+  Teaching Small Models to Learn
+
+$meta
+  title = Teaching Small Models to Learn — staged hint fading at bench scale
+  description = Research-paper draft + interactive bench: teaching addressable lookup to small recurrent networks by staged hint fading (distillation, ignition bars, failure taxonomy). Train tiny nets live in the appendix lab.
+  tags = ai, teachability, recurrent networks, distillation, test-time compute, research paper, interactive
+
+// Demo questions for the live depth test — picked to separate by type like the paper's Sec 5:
+// math/logic gains a lot from extra compute, factual recall gains ~nothing.
+demoQuestion
+  A bat and a ball cost $1.10 together. The bat costs $1.00 more than the ball. How much does the ball cost? Explain in one line.
+  A farmer has 17 sheep. All but 9 run away. How many are left? Answer in one sentence.
+  What is 47 * 68 in one number? Then give the last digit only on a second line.
+  If a train leaves at 3pm at 60mph and another at 4pm at 90mph same direction, when does the second catch the first? One sentence.
+  What is the capital of France? Answer with one word.
+  Who wrote Hamlet? Answer with the name only.
+
+output
+  [title]

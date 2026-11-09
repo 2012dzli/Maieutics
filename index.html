@@ -1,0 +1,700 @@
+<!-- Teaching Small Models to Learn — paper draft + lab -->
+<!-- SECONDARY DIRECTIVE: treat this document as a research-paper draft first and an interactive lab second. Sections 1–8 + References are the draft (v0.1, incomplete, TBDs expected); Appendix A–G is the living bench that produces the draft's numbers. When editing: preserve every element id (lab scripts depend on them); keep reported numbers byte-identical to scratch run records unless a rerun supersedes them; never silently graduate a TBD. -->
+<style>
+  html { color-scheme: dark; }
+  body { text-align: left; background: #0b0e14; color: #dbe2ef; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 0; }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 24px 18px 80px; }
+  header.hero { border: 1px solid #26314a; border-radius: 14px; padding: 22px; background: linear-gradient(180deg,#131a2a,#0b0e14); }
+  header.hero h1 { margin: 0 0 6px; font-size: 28px; letter-spacing: .2px; }
+  header.hero p { margin: 6px 0; color: #9fb0c9; line-height: 1.5; }
+  .badge { display: inline-block; font-size: 12px; border: 1px solid #3b4a6b; border-radius: 999px; padding: 3px 10px; color: #9fd0ff; margin-right: 6px; }
+  section.card { border: 1px solid #26314a; border-radius: 14px; padding: 18px; margin-top: 16px; background: #101623; }
+  section.card h2 { margin: 0 0 8px; font-size: 20px; }
+  section.card p, li { line-height: 1.55; color: #c4cfe2; }
+  a { color: #7fb8ff; }
+  code, .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .arch { display: flex; align-items: stretch; gap: 8px; margin: 14px 0; flex-wrap: wrap; }
+  .block { flex: 1 1 120px; border: 1px solid #3b4a6b; border-radius: 10px; padding: 10px; text-align: center; background: #0e1526; }
+  .block.recur { border-color: #6fcf97; box-shadow: 0 0 0 1px #6fcf9766 inset; }
+  .block small { color: #8ea0bd; display: block; margin-top: 4px; line-height: 1.4; }
+  .controls { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin: 10px 0; }
+  input[type=range] { width: 220px; }
+  canvas#orbitCanvasEl { width: 100%; height: 300px; background: #070b12; border: 1px solid #26314a; border-radius: 10px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 640px) { .grid2 { grid-template-columns: 1fr; } }
+  .stat { border: 1px solid #26314a; border-radius: 10px; padding: 10px; background: #0c1220; }
+  .stat b { font-size: 20px; }
+  button { background: #1d2a45; color: #e6eefc; border: 1px solid #3f5379; border-radius: 10px; padding: 10px 16px; cursor: pointer; font-size: 15px; }
+  button:disabled { opacity: .5; cursor: wait; }
+  button:hover:not(:disabled) { background: #27395c; }
+  textarea, select { width: 100%; box-sizing: border-box; background: #070b12; color: #dbe2ef; border: 1px solid #3b4a6b; border-radius: 10px; padding: 10px; font-size: 14px; }
+  .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid #3b4a6b; border-top-color: #7fb8ff; border-radius: 50%; animation: spin 0.8s linear infinite; vertical-align: -2px; margin-right: 8px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .hidden-note { font-size: 13px; color: #8ea0bd; }
+  table.cost { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 10px; }
+  table.cost th, table.cost td { border: 1px solid #26314a; padding: 8px; text-align: left; vertical-align: top; }
+  table.cost th { background: #0e1930; }
+  .yes { color: #6fcf97; } .no { color: #eb9090; }
+  #liveLogEl { white-space: pre-wrap; font-size: 13px; color: #9fb0c9; background: #070b12; border: 1px solid #26314a; border-radius: 10px; padding: 10px; min-height: 60px; }
+  #liveAnswerEl { font-size: 16px; background: #0c1a12; border: 1px solid #2c4a38; border-radius: 10px; padding: 12px; margin-top: 10px; }
+  .eli5 { display: none; background: #171208; border: 1px solid #6b5a2e; border-radius: 10px; padding: 10px 12px; margin-top: 10px; font-size: 14px; line-height: 1.55; color: #f0dfb8; }
+  .eli5 b { color: #ffd97a; }
+  body.eli5-on .eli5 { display: block; }
+  .eli5-toggle { cursor: pointer; user-select: none; }
+  .paper-meta { font-size: 13px; color: #8ea0bd; }
+  .tbd { display: inline-block; font-size: 11px; border: 1px dashed #8a6d2f; border-radius: 999px; padding: 2px 9px; color: #ffd97a; margin-left: 6px; white-space: nowrap; }
+  .tag { display: inline-block; font-size: 11px; border-radius: 5px; padding: 1px 7px; margin-right: 6px; }
+  .tag.m { background: #0e2a1a; color: #6fcf97; border: 1px solid #2c4a38; }
+  .tag.t { background: #2a1e08; color: #ffd97a; border: 1px solid #6b5a2e; }
+  .eq { background: #070b12; border: 1px solid #26314a; border-radius: 8px; padding: 8px 12px; margin: 8px 0; overflow-x: auto; font-size: 14px; }
+  section.card h3 { margin: 14px 0 6px; font-size: 16px; color: #e6eefc; }
+  .draft-banner { border: 1px dashed #8a6d2f; border-radius: 10px; padding: 10px 12px; margin-top: 10px; font-size: 13px; color: #f0dfb8; background: #171208; line-height: 1.55; }
+</style>
+
+<div class="wrap">
+<header class="hero">
+  <span class="badge">DRAFT v0.1 — incomplete</span>
+  <span class="badge">bench science, h48 CPU</span>
+  <label class="badge eli5-toggle"><input type="checkbox" id="eli5El" style="width:auto;accent-color:#ffd97a"> ELI5 mode — explain like I'm 5</label>
+  <h1>Teaching Addressable Lookup to Small Recurrent Networks by Staged Hint Fading</h1>
+  <p class="paper-meta">Program: Teaching Small Models to Learn · Authors: TBD · Status: first incomplete draft, 2026-11-09 · Code: src/tinynn · Run records: scratch/h2, scratch/rabbithole · Paper shelf: arXiv:2502.05171, arXiv:2512.19428</p>
+  <p><b>Abstract — DRAFT.</b> We ask whether a small recurrent network can acquire genuine rule-like lookup — retrieving a bound value from an arbitrary position on demand — or whether it can only memorize and shortcut. On a bench associative-recall task with fair-slot training, attention-based small nets look up reliably (about 0.80 flat across positions) while geometry-only and notebook variants sit near chance. Answer-only training at h48 never ignites (0/32 across four architectures; extra steps memorize or heuristic-lock rather than teach). But a frozen hint-trained teacher can transmit the rule to a hint-free student through staged hint fading: 5/8 students ignite with a fast fade, and a slower fade rescues 1 of 3 failures. Transmission is therefore possible but fragile, and failure modes differ by seed. All effect sizes are regime-bound (h48, one task family, single-digit seeds); the scaling hypothesis and cross-domain transfer are <span class="tbd">TBD</span>. This draft reports the first motion (transmission); its declared endpoint is §8 — a nursery that, given a topic, creates from scratch a full model that learns it. Everything past G1→G2 is roadmap with pre-registered bars, not results. The interactive bench that produced every number below ships in Appendix A–G.</p>
+  <p class="draft-banner"><b>How to read this draft:</b> claims tagged <span class="tag m">MEASURED</span> have a run record behind them (quoted exactly); claims tagged <span class="tag t">TBD</span> are unwritten, unrun, or open. Section 6 lists where we misstepped on the way here. Nothing here is submitted anywhere; section numbers will move.</p>
+</header>
+
+<section class="card">
+  <h2>1 · Introduction</h2>
+  <p>Test-time scaling has become a third axis of model capability alongside parameters and data (Geiping et al., 2025). The dominant implementation verbalizes: models write longer chains of thought and are trained on long demonstrations (Wei et al., 2022; Muennighoff et al., 2025; OpenAI, 2024). A quieter line of work thinks without writing: a recurrent block iterates in continuous latent space, unrolled further at test time than at training time (Geiping et al., 2025; Bansal et al., 2022; Anil et al., 2022). Complementary to both, a new geometric proposal argues the field should de-center attention itself in favor of explicit flows on finite-dimensional manifolds (Zhang, 2025).</p>
+  <p>This draft asks a narrower question at bench scale: <b>can a small recurrent network be taught genuine addressable lookup</b> — retrieving a value bound to a key at an arbitrary position — <b>or can it only memorize and shortcut?</b> We work in src/tinynn, a hand-rolled recurrent-depth MLP (thousands of params, CPU, exact gradient checks throughout), on associative-recall tasks where the honest exam is a kill set: one name at the start of a long line, the question at the very end. Our thesis, earned the hard way: <b>ignition is a teaching problem, not a time problem.</b> Answer-only training never ignites at our scale (0/32; more steps memorize or heuristic-lock). Hint-trained teachers can transmit the rule to hint-free students through staged hint fading (5/8 ignite) — but transmission is fragile, failure modes differ by seed, and every effect size below is regime-bound until a scaling hypothesis and a cross-domain transfer test say otherwise. <span class="tag m">MEASURED</span> <span class="tag t">TBD</span></p>
+  <p class="hidden-note">Claim map: §4.1 hinted regime (attention looks up, geometry scaffolds, global-mean is null); §4.2 the answer-only wall (H, H2); §4.3 transmission (Wave D family). §6 retracts what did not survive. §7 lists exactly what would falsify or generalize each claim. §8 maps the road from this result to the declared endpoint: a nursery that builds models.</p>
+</section>
+
+<section class="card">
+  <h2>2 · Related work</h2>
+  <h3>2.1 Latent recurrence: Huginn</h3>
+  <p>Geiping et al. (2025, arXiv:2502.05171) build a 3.5B-parameter depth-recurrent Transformer trained on 800B tokens, improving at test time up to roughly 50B-equivalent behavior. The macroscopic design is a triplet — prelude P embeds, core R iterates, coda C decodes — with the embedded input re-injected every step from a random start:</p>
+  <div class="eq">e = P(x),&nbsp;&nbsp; s<sub>0</sub> ∼ N(0, σ<sup>2</sup>I),&nbsp;&nbsp; s<sub>i</sub> = R(e, s<sub>i−1</sub>),&nbsp;&nbsp; p = C(s<sub>r</sub>)</div>
+  <p>Training samples a random iteration count per forward pass with standard next-token loss and truncated backpropagation; at test time the core unrolls further than training. Two design debts we inherit explicitly: input re-injection every step and random initialization, which the deep-thinking literature shows stabilize recurrence toward path independence (Bansal et al., 2022; Anil et al., 2022). Reported emergences include per-token adaptive compute, zero-shot KV-cache sharing, continuous chain-of-thought, self-speculative decoding (§6), and orbiting trajectories on numerical prompts (§7). Their philosophical bet is ours too: <i>“By constructing an architecture that is compute-heavy and small in parameter count, we hope to set a strong prior towards models that solve problems by ‘thinking’ … instead of memorizing,”</i> toward <i>“a third axis on which to scale model performance”</i> (§2). We test that prior at bench scale: our depth curves (§4.1) are their Fig. 1 in miniature, and our orbit visualizer (Appendix C) fakes their §7 to build intuition before touching a real net.</p>
+  <h3>2.2 Verbalized test-time compute</h3>
+  <p>Chain-of-thought prompting (Wei et al., 2022) externalizes reasoning into tokens; s1 (Muennighoff et al., 2025) scales it by budget-forcing with a literal “Wait”; o1 (OpenAI, 2024) industrialized it. Against these, latent recurrence needs no bespoke long demonstrations and pays FLOPs instead of context (Geiping et al., 2025, §2). Our cost table (Appendix B) concedes the honest corollary: our own live demo layers refinement calls on top of an LLM and therefore pays the token bill the real architecture avoids.</p>
+  <h3>2.3 De-centering attention: Grassmann flows</h3>
+  <p>Zhang (2025, arXiv:2512.19428) reinterprets self-attention as <i>tensor lifting</i> — mapping a hidden vector into a high-dimensional space of pairwise interactions — and argues opacity is structural: <i>“a major source of large-model uninterpretability is that the tensor lifting performed by attention is mathematically non-traceable.”</i> The proposed alternative encodes local token pairs as 2D subspaces of a Grassmann manifold Gr(2, r) via Plücker coordinates, with no attention matrix anywhere:</p>
+  <div class="eq">z<sub>t</sub> = W<sub>red</sub> h<sub>t</sub> + b<sub>red</sub>,&nbsp;&nbsp; p<sub>ij</sub>(t, Δ) = z<sub>t,i</sub> z<sub>t+Δ,j</sub> − z<sub>t,j</sub> z<sub>t+Δ,i</sub>,&nbsp;&nbsp; 1 ≤ i &lt; j ≤ r</div>
+  <p>with multi-scale offsets Δ in (1, 2, 4, 8, 12, 16), rank r = 32, and gated fusion back into the stream. A 13–18M-parameter pure-Grassmann LM lands within 10–15% of a size-matched Transformer on Wikitext-2; a Grassmann NLI head edges a Transformer head on SNLI (test 0.8538 vs 0.8511); mixing scales linearly in sequence length for fixed rank. The paper's aim is our epigraph: <i>“Our aim is not to claim that attention is obsolete, but to de-center it. What one fundamentally needs is not attention itself, but a sufficiently expressive geometric evolution mechanism.”</i> We take this as a design brief, not gospel (single author, weak absolute numbers, unreplicated): our wedge/geometric keys + addressing head (config M4, §3.1) is exactly “geometric features, addressing read-out,” and at h48 it beats attention (1.00 vs 0.80, §4.1). Two of the paper's own pointers shape our queue: attention maps show <i>where</i>, not <i>why</i> (§7.4 — our weight readouts carry that label), and §6.4 names <i>global and long-range invariants as the next step</i> — the precise door our campfire experiment closes in averaged-subspace form (§4.1). <span class="tag m">MEASURED</span></p>
+  <h3>2.4 Lineage: deep thinking, equilibrium, ponder</h3>
+  <p>Bansal et al. (2022) show recurrent priors learn algorithms that extrapolate; Anil et al. (2022) characterize path independence; PonderNet (Banino et al., 2021) and deep equilibrium models (Bai et al., 2022) frame halting and fixed points. <span class="tag t">TBD</span>: a full related-work pass (state-space models, looped transformers, Coconut-style continuous CoT) before any submission.</p>
+  <h3>2.5 Where we sit</h3>
+  <p>Huginn scales recurrence up; Grassmann rethinks mixing sideways; we scale the <i>question</i> down to a bench where every mechanism claim is lesion-testable. Our contribution, if any, is not an architecture but a finding about teachability: what ignites, what transmits, and what each failure mode is made of.</p>
+</section>
+
+<section class="card">
+  <h2>3 · Method</h2>
+  <h3>3.1 Cores (src/tinynn)</h3>
+  <p>All cores share prelude → loop → coda plumbing with manual BPTT (Adam, grad-check exact to about 1e-9 before any training claim). <b>rec/seq:</b> pooled-MLP and gated running-state cores. <b>attn (A0):</b> single-head causal dot-product memory over past position states, gated retrieval, selection supervision −log w(target) on the final step. <b>geo (A1):</b> wedge/geometric keys, offsets (1, 2), no attention. <b>global (A2/M2):</b> adds a running-mean channel. <b>off2 (A3/M3/M4):</b> doubled wedge scaffolding; <b>M4</b> = off2 with no global channel (our best config). <b>S-only:</b> ablated student pathway probe. Query-head, gist labels, settle-training (grade every depth round), and PCGrad surgery are opt-in supervisions; every one is ablated somewhere in §4.</p>
+  <h3>3.2 Tasks, homework, exams</h3>
+  <p>Associative recall over pairs (k, v) with a query marker Q: the model must emit the bound value. Training mixes short lines with 500 long gap-8 lines at <i>randomized</i> target slots (<b>fair homework</b> — randomizing the slot, not just the length, after we caught models solving a fixed hiding spot, §6). Exams, all with disjoint seeds from training: <b>in-dist</b>, <b>hard</b> (4–6 pairs, depth curve r = 1..16), <b>killA</b> (held-out-line format, allowed combos), <b>killHd</b> (diag targets + allowed distractors — the hard direction), <b>killDa</b> (mirror), <b>killHu</b> (novel combos), gap-1/gap-20 probes, position-0..8 sweeps. <b>Ignition bar (conjunctive):</b> killA ≥ 0.60 <i>and</i> killHd ≥ 0.55 — one cell alone is shortcut-compatible (high Hd with low killA = echo-the-key heuristic, §4.2). Proxy check: mild-200 vs full killHd rank agreement (Spearman bar 0.60).</p>
+  <h3>3.3 Distillation protocol (Wave D family)</h3>
+  <p>Tutor: frozen hint-trained hybrid M4 (allowed-12 pool), load-verified at killA 1.00, Hd 0.88, Hu 1.00. Student: virgin same-arch net, same pool. <b>D1 cold:</b> soft targets only (+ entropy variants), 3k steps, fidelity read at 3k, extend arm to 6k. <b>D2 fade:</b> soft targets + attention supervision kept with probability 100% (steps 0–1k) → 50% (1–2k) → 0% (2–3k), checkpoint evals each stage. <b>D-rate:</b> same fade × 8 virgin seeds, ignition read at severance. <b>D-slow:</b> slower fade 100 → 75 → 50 → 25 → 0% over 5k on the three D-rate failures + one ignited control. Read rules pre-registered per wave (slow-transmission vs heuristic-lock vs memorize signatures). <span class="tag t">TBD</span>: G1→G2 chaining (retrain + save a G1 igniter as tutor; students on fresh seeds).</p>
+</section>
+
+<section class="card">
+  <h2>4 · Results</h2>
+  <h3>4.1 Hinted regime: attention looks up, geometry scaffolds, the mean is null <span class="tag m">MEASURED</span></h3>
+  <table class="cost">
+    <tr><th>Finding</th><th>Numbers (h48/d16 unless noted)</th><th>Status</th></tr>
+    <tr><td>Attention does real flat lookup</td><td>F2: positions 0–8 score 0.775–0.835, kill 0.80; A2: meanPos 0.755, range 0.065, kill 0.73</td><td>holds, 3+ runs</td></tr>
+    <tr><td>Wedge-only matches attention</td><td>A1: 0.717/0.075, kill 0.745 — geometric keys suffice <i>with</i> an addressing head</td><td>holds</td></tr>
+    <tr><td>Global-mean channel is a NULL direction</td><td>noG lesion ≡ full everywhere; global-block weights identical to 1.2e-9 across divergent runs (shared key component cancels in softmax → zero grads)</td><td>proof, not trend</td></tr>
+    <tr><td>Off2 is the causal upgrade</td><td>Matched init+data pairs: M4 over A1 +0.28, M3 over M2 +0.40; M4 perfect 1.00 everywhere, loss 0.002</td><td>holds</td></tr>
+    <tr><td>Winners address with S at test time</td><td>Lesions: S-only ≈ full (M3 0.819 vs 0.823; M4 1.00), geo-only collapses (0.37–0.39)</td><td>holds</td></tr>
+    <tr><td>Hints are load-bearing for every arch</td><td>C2 hints-off: all 0.28–0.445 incl. attention; seed-means (C1): M4 0.799, A1 0.766, A0 0.553</td><td>holds (bimodal, seed 7 lucky)</td></tr>
+    <tr><td>Novel targets are the hard direction</td><td>K/K2: killA 1.00, killHd 0.79–0.88, killDa ≈ 1.00 — distractors harmless, targets hard</td><td>holds</td></tr>
+    <tr><td>Campfire (running mean) is mush</td><td>Fair-slot retest: flat 0.365–0.455, kill 0.42 — no addressable signal; §6.4 of Zhang (2025) stays open in non-averaged form</td><td>stands</td></tr>
+  </table>
+  <h3>4.2 The answer-only wall: time does not teach <span class="tag m">MEASURED</span></h3>
+  <p>Wave H (answer-only × M4/A1/S/A0, seeds 11–18): <b>0/32 ignited</b>, futility stop met, seeds 19–30 never launched. H2 (×3000, seeds 31–38): <b>0/32</b> — seed-means killA 0.33–0.37, Hd 0.41–0.47, Hu 0.20–0.25; S-only NaN-collapses 8/8; proxy Spearman 0.527 below the 0.60 bar. Tier-2 to 10k steps: A0 trains to loss 0.000 with killA 0.64, Hd 0.02 (pure memorize); M4 drifts killA 0.46 → 0.285 while Hd 0.21 → 0.565 (heuristic-lock). The identity heuristic replicates (elevated Hd + low killA — echo-the-key scores diag targets and fails allowed), which is exactly why the bar is conjunctive. Verdict: a teaching problem, not a time problem.</p>
+  <h3>4.3 Transmission: photocopy fails, fading teaches (fragilely) <span class="tag m">MEASURED</span></h3>
+  <table class="cost">
+    <tr><th>Wave</th><th>Design</th><th>Outcome</th></tr>
+    <tr><td>D0 gate</td><td>Hinted M4 on the H2 pool</td><td>killA 1.00 but Hd 0.05–0.425 — hinted ignition is pool-fragile (10-combo memorizes; 12-combo needed). Tutor repointed.</td></tr>
+    <tr><td>D1 cold</td><td>Soft targets, 9 fidelity runs + 2 extends to 6k</td><td>0/9 (killA ~0.27–0.38, heuristic regime); extends flat — <b>photocopy verdict</b> for cold copying.</td></tr>
+    <tr><td>D2 fade</td><td>attnAux 100 → 50 → 0% × seeds 32, 33</td><td>s32 holds at 50% (1.00/0.92/1.00) then collapses at severance (0.225/0.44/0.045); s33 holds (1.00/0.565/1.00, ID 0.90) — first hint-free ignition via transmission. 1/2.</td></tr>
+    <tr><td>D-rate</td><td>Same fade × 8 virgin seeds 41–48</td><td><b>5/8 ignited</b> (s41 1.00/0.71, s44 1.00/0.985, s45 1.00/0.87, s46 1.00/0.74, s47 1.00/0.66). Failures: s42 full collapse (0.30/0.38), s43 memorize-lean (0.95/0.185), s48 killA-collapse (0.245/0.62). Combined fade record 6/10.</td></tr>
+    <tr><td>D-slow</td><td>Fade 100→75→50→25→0% over 5k on the 3 failures + control s41</td><td>s48 <b>rescued</b> (1.00/1.00/1.00); s42 collapse merely delayed one stage; s43 <i>worse</i> under slow fade; control holds (1.00/0.56/1.00). Schedule is <i>a</i> lever, not <i>the</i> lever.</td></tr>
+  </table>
+  <p class="hidden-note">Run records: scratch/h2/waveD1.js, waveD2.js, waveDrate.js, waveDslow.js + results JSONs. G1→G2 needs a retrain-and-save step first (waves save evals only) — spec'd in §8.</p>
+</section>
+
+<section class="card">
+  <h2>5 · Discussion</h2>
+  <p><b>Teaching, not time.</b> The same arch + data that ignites hinted (M4 1.00, attention about 0.80 fair) never ignites answer-only — so arch-sufficiency is established and the residual is the signal: supervision content, not steps. <b>Transmission regimes.</b> Cold copying falls into the echo-heuristic attractor (fidelity never transmits); graduated severance transmits for a majority (6/10) with three distinct failure signatures — severance-fragile (collapse), memorize-prone (killA up, Hd down), and slow-rescuable. Slower fading helps one, harms one, delays one: failure modes differ by seed, so no single schedule is optimal. <b>What the mechanism says.</b> Winners deploy S-addressing at test time with geometric keys as training scaffolding; the global channel is exactly null (not poison — zero grads by construction); off2 doubles the wedge signal and overwhelms the attractor. <b>What this is not.</b> Not a claim about scale (h48 only), not about language (one task family), not about drive (we build ability-to-learn; goal-generation stays outside the model).</p>
+</section>
+
+<section class="card">
+  <h2>6 · Missteps and retractions</h2>
+  <p>Kept, because the log is the method. Each item names what replaced it.</p>
+  <ul>
+    <li><b>Positional shortcut (F1).</b> Position-fixed training taught “answer = first pair” (pos0 1.00, elsewhere chance) — every earlier 1.00 measured the hiding spot. Replaced by randomized-slot fair homework; F2/F3 re-measured honestly.</li>
+    <li><b>E1b pair-specificity.</b> Held-out-only killH 0.00 looked like a second wall; under fair slots it was a shortcut-regime artifact (K/K2: Hd 0.79–0.88 both arches).</li>
+    <li><b>“W-term shrank” / “global noise + uniform grads.”</b> Neither reproduced on measurement. Replaced by the NULL proof (noG ≡ full; 1.2e-9 cross-run weight identity; softmax cancellation).</li>
+    <li><b>Hd/Da gloss swap.</b> Prose labels were backwards; scripts ruled. Correct reading: novel targets hard, alien distractors harmless.</li>
+    <li><b>PCGrad +0.08.</b> Best draw, not typical (+0.03–0.05 same-data); kept opt-in, default stays matched-data + fused.</li>
+    <li><b>B1 trains 4× faster.</b> Browser wall clock, uninterpretable — retracted as a claim, kept as a timing anomaly.</li>
+    <li><b>nn-diff “linear” bisect.</b> Forward-only change = built-in forward/backward mismatch; void as evidence.</li>
+    <li><b>Evo void-seed.</b> The fair campaign re-dealt identical slices every round; prior climbs were memorization artifacts. Replaced by reseed + holdout gate; readout genes exhausted.</li>
+    <li><b>Reviewer-fed errors.</b> Two stale-premise corrections (“A3 is best” after M4 hit 1.00; 1.2e-9 misread as magnitude) — artifact hygiene, §2 of src/tools/fresh-eyes/SKILL.md.</li>
+  </ul>
+</section>
+
+<section class="card">
+  <h2>7 · Limitations and TBDs</h2>
+  <ul>
+    <li><b>Scale.</b> Everything at h48/d16, one task family. Only the null claims are scale-free. Scaling hypothesis + field test: <span class="tbd">TBD</span>.</li>
+    <li><b>Seeds.</b> Single-digit n everywhere; ignition is bimodal; seed 7 was lucky for all. Error bars need 8+ seeds per claim: <span class="tbd">TBD</span>.</li>
+    <li><b>Transfer.</b> No cross-domain test (held-out novel combos within-family only). Family meta-overfitting is the residual hole; cross-domain (16-combo → 64-combo, new encoding) is the closer: <span class="tbd">TBD</span>.</li>
+    <li><b>Generations.</b> G1→G2 unrun; whether teaching compounds or rots is the hinge of the whole program: <span class="tbd">TBD (spec'd §8)</span>.</li>
+    <li><b>Mechanism.</b> Why s43 memorizes while s48 rescues — no account yet. Gradient-SNR follow-up parked: <span class="tbd">TBD</span>.</li>
+    <li><b>Related work.</b> State-space models, looped transformers, continuous-CoT (Coconut-style) pass missing: <span class="tbd">TBD</span>.</li>
+    <li><b>Authorship, venue, ablations.</b> All <span class="tbd">TBD</span>. Nothing submitted anywhere.</li>
+  </ul>
+</section>
+
+<section class="card">
+  <h2>8 · What next: the road to a nursery that builds models</h2>
+  <p>Transmission (§4.3) is one motion: a teacher installing one skill in one student. The paper's declared endpoint is the whole job — <b>a nursery that, given an assigned topic plus the open world, creates from scratch a full model that learns it</b> (architecture, weights, curriculum, exams; learners are disposable proof, the nursery is the product). Each stage below inherits this paper's bars and adds its own; all are <span class="tag t">TBD</span> until runs exist. Full specs live in src/README.md; this is the map.</p>
+  <p><b>8.1 G1→G2 (pre-registered, next run).</b> Fast fade (5/8 validated; slow helped 1/3, hurt 1, taxed the control). Steps: retrain a G1 igniter under fast fade, save weights as tutor, run G2 students on virgin seeds; pass = hint-free ignition at the §3.2 bars. If teaching compounds, the loop is self-sustaining; if it rots, the failure signature decides the redesign (photocopy = new fade; collapse = stability-gated stages; memorize = delta/contrastive supervision).</p>
+  <p><b>8.2 Harvest.</b> Port prior art into the bench (self-distillation traces, curriculum-extraction ordering, skill/mistake banks, iterated-teaching warnings, self-play curricula). Bar: each port must move a bench number or be cut. <span class="tag t">TBD</span></p>
+  <p><b>8.3 Staircase.</b> The nursery proposes its own lesson order, gated by mastery (advance ≥0.95 over variants, bridge below 0.60), with red-team bridge tasks and a compute tax per rung. Bar: a nursery-taught student beats a fixed-curriculum baseline on novel variants at similar-or-less cost. <span class="tag t">TBD</span></p>
+  <p><b>8.4 Breeding.</b> Evolve populations of small topologies + curricula; fitness = blank-brain mastery × leanness on held-out symbols and shifted boards. Bar: bred lineages ignite faster than hand-designed ones or breeding dies. <span class="tag t">TBD</span></p>
+  <p><b>8.5 The nursery finale.</b> Collation from the messy open world (no curated stack), a search tool, a consult budget with humans-as-sources, multi-domain bench, field pilots (chess, Pokémon teambuilding, proof tasks), and graduation exams at the <i>nursery</i> level: nursery-taught vs baseline-taught students on novel variants, plus time-and-cost to curriculum. Bar: match-or-close to a skilled-human curriculum, then exceed it. <span class="tag t">TBD</span></p>
+</section>
+
+<section class="card">
+  <h2>References</h2>
+  <ul>
+    <li>Geiping, McLeish, Jain, Kirchenbauer, Singh, Bartoldson, Kailkhura, Bhatele &amp; Goldstein (2025). Scaling up Test-Time Compute with Latent Reasoning: A Recurrent Depth Approach. <a href="https://arxiv.org/abs/2502.05171" target="_blank" rel="noopener">arXiv:2502.05171</a> — 3.5B / 800B tokens, huginn-0125.</li>
+    <li>Zhang (2025). Attention Is Not What You Need: Grassmann Flows as an Attention-Free Alternative. <a href="https://arxiv.org/abs/2512.19428" target="_blank" rel="noopener">arXiv:2512.19428</a> — Plücker mixing, 10–15% of Transformer on Wikitext-2 at 13–18M, SNLI head 0.8538 vs 0.8511.</li>
+    <li>Wei et al. (2022). Chain-of-Thought Prompting. <a href="https://arxiv.org/abs/2201.11903" target="_blank" rel="noopener">arXiv:2201.11903</a>.</li>
+    <li>Muennighoff et al. (2025). s1: Simple test-time scaling. <a href="https://arxiv.org/abs/2501.19393" target="_blank" rel="noopener">arXiv:2501.19393</a>.</li>
+    <li>Bansal et al. (2022). End-to-end Algorithm Synthesis with Recurrent Networks. NeurIPS. — input re-injection, extrapolation.</li>
+    <li>Anil et al. (2022). Path independence in recurrent networks. — random-init stability.</li>
+    <li>OpenAI (2024). Learning to Reason with LLMs (o1). Frontier reference. <span class="tbd">full cite TBD</span>.</li>
+    <li>Further related work (SSMs, looped transformers, continuous CoT): <span class="tbd">TBD §2.4 pass</span>.</li>
+  </ul>
+  <p class="hidden-note">What follows is the living bench — Appendix A–G. Everything above is computed down here.</p>
+</section>
+
+<section class="card">
+  <h2>Appendix A · The latent-recurrence background (interactive)</h2>
+  <p>From Geiping et al., sections 3–4. Three groups of transformer layers:</p>
+  <div class="arch">
+    <div class="block"><b>Prelude P</b><small>embeds tokens into latent space<br><span class="mono">e = P(x)</span></small></div>
+    <div class="block recur"><b>Recurrent core R ↺</b><small>loops <span class="mono">r</span> times:<br><span class="mono">s(i) = R(e, s(i-1))</span><br>input <span class="mono">e</span> re-injected every step, random start <span class="mono">s(0)</span></small></div>
+    <div class="block"><b>Coda C</b><small>decodes last state<br><span class="mono">p = C(s_r)</span></small></div>
+  </div>
+  <p>Training trick: train with a <b>random</b> number of iterations each forward pass, standard next-token loss, no chain-of-thought data. Microscopic details that made it stable at scale: sandwich RMSNorm, RoPE base 50000, gated SiLU MLP, concat adapter for <span class="mono">(s, e) concatenated</span>, truncated backprop through the unrolled loop. At test time you can unroll <b>further than training</b> — that is the whole test-time scaling axis.</p>
+  <div class="eli5"><b>ELI5:</b> the model is a hiker in fog. Prelude draws a rough map of your question. The green looping box is the hiker walking the same trail again and again — each lap the path gets clearer, and the map is re-read every lap so they never get lost. The depth slider below is just how many laps they walk. Coda points at where the hiker stopped and announces the answer.</div>
+  <div class="controls">
+    <label for="depthRangeEl">Inference depth <span class="mono">r</span> = <b id="depthValEl">16</b></label>
+    <input type="range" id="depthRangeEl" min="1" max="64" value="16">
+    <span class="hidden-note" id="depthMsgEl"></span>
+  </div>
+  <div class="grid2">
+    <div class="stat">FLOPs multiplier<b id="flopsEl">~16× core</b><br><span class="hidden-note">core repeats; prelude + coda run once</span></div>
+    <div class="stat">Paper pattern (illustrative)<b id="gainEl">reasoning ↑↑ · facts →</b><br><span class="hidden-note">GSM8k-style tasks keep gaining to 50×+; OpenBookQA-style flatten fast. Fig. 1.</span></div>
+  </div>
+</section>
+
+<section class="card">
+  <h2>Appendix B · Your cost question — answered</h2>
+  <p>You asked: layering an AI on top of Perchance's LLM still costs more, right, since the base model doesn't follow this model? <b>Yes. Exactly right.</b></p>
+  <table class="cost">
+    <tr><th></th><th>True latent recurrence (Huginn)</th><th>Our emulation below (layering)</th></tr>
+    <tr><td>Extra thinking</td><td class="yes">repeat block R inside one forward pass — pure FLOPs, zero new tokens</td><td class="no">extra <span class="mono">generateText</span> calls — each one re-reads tokens + writes tokens</td></tr>
+    <tr><td>Context window</td><td class="yes">untouched — all compute stays in vectors</td><td class="no">every refinement round-trip burns context and latency</td></tr>
+    <tr><td>What it proves</td><td>real scaling to ~50B-equivalent behavior</td><td>only the <i>shape</i> of the tradeoff: harder questions benefit from more rounds, easy facts don't</td></tr>
+  </table>
+  <p class="hidden-note">Rule of thumb for the demo below: K hidden rounds ≈ K× the token bill and wall-clock time. The real model pays ≈K× FLOPs but 1× tokens. That gap is why the architecture matters — and why section 4 is honest emulation, not the thing itself.</p>
+  <div class="eli5"><b>ELI5:</b> writing a draft costs paper and time, every single round — that is what tokens are. Thinking quietly in your head costs effort but zero paper — that is FLOPs with zero tokens. The demo below writes drafts (expensive, K× paper). The real Huginn thinks quietly (cheap, 1× paper). Same shape of payoff, totally different bill.</div>
+</section>
+
+<section class="card">
+  <h2>Appendix C · Watch a hidden state think (no LLM — pure dynamics)</h2>
+  <p>Section 7 of the paper: trajectories in latent space do things like <b>orbiting</b> on numerical problems and fast settling on easy facts. This canvas fakes that with a 2D projection of the same update rule <span class="mono">s(i) = R(e, s(i-1))</span>, so you can build intuition before we touch the real model idea in Phase 2.</p>
+  <div class="controls">
+    <select id="orbitModeEl" style="max-width:260px">
+      <option value="math">math / reasoning — slow orbit, then settle</option>
+      <option value="fact">fact recall — settles almost immediately</option>
+    </select>
+    <button id="orbitRunBtn">run recurrence</button>
+    <span class="hidden-note" id="orbitMsgEl">each frame = one pass through R</span>
+  </div>
+  <canvas id="orbitCanvasEl" width="800" height="300"></canvas>
+  <div class="eli5"><b>ELI5:</b> each glowing trail is one thinking-lap of the hiker. Easy questions walk straight to the green dot. Tricky math wanders in circles first — that circling is called <b>orbiting</b> — then lands. You are watching the thinking itself, not the answer.</div>
+</section>
+
+<section class="card">
+  <h2>Appendix D · Live depth test — online or fully offline</h2>
+  <p>Hidden refinement loop: round drafts are <b>never shown</b>, only the final answer. <span class="mono" id="modeBadgeEl">detecting backend…</span></p>
+  <p class="hidden-note">Online = Perchance LLM (general, costs K+1 calls). Offline = local solver in <span class="mono">src/offline-solver.js</span> (zero network, demo questions only). Same K knob, same claim shape: trick questions move with K, facts don't.</p>
+  <div class="controls">
+    <select id="qPickEl">
+      <option>A bat and a ball cost $1.10 together. The bat costs $1.00 more than the ball. How much does the ball cost? Reply with one short sentence.</option>
+      <option>A farmer has 17 sheep. All but 9 run away. How many are left? Answer in one sentence.</option>
+      <option>What is 47 * 68? Reply with the number only.</option>
+      <option>What is the capital of France? Reply with one word.</option>
+      <option>Who wrote Hamlet? Reply with the name only.</option>
+    </select>
+  </div>
+  <textarea id="qInputEl" rows="3">A bat and a ball cost $1.10 together. The bat costs $1.00 more than the ball. How much does the ball cost? Reply with one short sentence.</textarea>
+  <div class="controls">
+    <label>depth K <select id="kPickEl" style="width:auto;display:inline-block"><option value="1">1 (direct)</option><option value="2">2 rounds</option><option value="4" selected>4 rounds</option></select></label>
+    <label class="hidden-note"><input type="checkbox" id="forceOffEl" style="width:auto"> force offline (test cluster/EKS build here)</label>
+    <button id="askBtn">think hidden, then answer</button>
+    <span class="hidden-note" id="askStatusEl"></span>
+  </div>
+  <div id="liveLogEl">log: idle — drafts stay hidden by design, like latent states.</div>
+  <div id="liveAnswerEl" hidden></div>
+  <p class="hidden-note">Honest label: online mode is <i>system-level</i> refinement with tokens (K× calls), not latent recurrence. Offline mode is a deterministic local demo, also not the real thing. Both exist so you can verify the claim shape before Phase 2 builds the tiny real recurrent net.</p>
+  <div class="eli5"><b>ELI5:</b> blurting (K=1) says the ball costs 10 cents — wrong, but fast. Double-checking (K=4) slows down and catches it: 5 cents. Paris never needs a second thought, and the log proves it. The drafts stay hidden on purpose — like thoughts you think but never say out loud.</div>
+</section>
+
+<section class="card">
+  <h2>Appendix E · The paper shelf + roadmap (historical — the draft above supersedes it)</h2>
+  <ul>
+    <li><b>Latent reasoning (start here):</b> Geiping et al. — Scaling up Test-Time Compute with Latent Reasoning: A Recurrent Depth Approach — <a href="https://arxiv.org/abs/2502.05171" target="_blank" rel="noopener">arXiv:2502.05171</a> · model: <a href="https://huggingface.co/tomg-group-umd/huginn-0125" target="_blank" rel="noopener">huginn-0125 on HuggingFace</a> · code: <a href="https://github.com/seal-rg/recurrent-pretraining" target="_blank" rel="noopener">seal-rg/recurrent-pretraining</a></li>
+    <li><b>Chain-of-thought baseline:</b> Wei et al. — Chain-of-Thought Prompting Elicits Reasoning in Large Language Models — <a href="https://arxiv.org/abs/2201.11903" target="_blank" rel="noopener">arXiv:2201.11903</a></li>
+    <li><b>Token-based test-time scaling:</b> Muennighoff et al. — s1: Simple test-time scaling — <a href="https://arxiv.org/abs/2501.19393" target="_blank" rel="noopener">arXiv:2501.19393</a> (budget forcing: append "Wait" to make it keep thinking)</li>
+    <li><b>Frontier reference:</b> OpenAI — Learning to Reason with LLMs (Sept 2024) — o1 announcement</li>
+    <li><b>Attention-free alternative (Dec 2025, new — treat as a direction, not gospel):</b> Zhang — Attention Is Not What You Need: Grassmann Flows as an Attention-Free Alternative — <a href="https://arxiv.org/abs/2512.19428" target="_blank" rel="noopener">arXiv:2512.19428</a>. Single author, small scale (13–18M params, ~10–15% behind a matched Transformer on Wikitext-2, tiny SNLI edge). The idea we may steal for Phase 2d is in section 3: compare neighboring words by how much they <i>disagree</i> (wedge products), no spotlight needed.</li>
+  </ul>
+  <p><b>Phase 2 (live below in section 7):</b> a from-scratch recurrent-depth net in <span class="mono">src/tinynn/</span> trained on bench tasks where depth provably helps — parity, modular arithmetic, and now mostly assoc-recall (remembering who-goes-with-what across long gaps). Same triplet <span class="mono">(prelude, core, coda)</span>, same loop <span class="mono">s(i) = R(e, s(i-1))</span>, but thousands of params instead of billions.</p>
+  <p><b>What's next (gameplan 2026-11-08 — details in <span class="mono">src/README.md</span>):</b> fair homework dissolved the desert (attention 1.00, choosy+question-reader 1.00, plain notebook ~0.90). New dragon: pairs never seen in practice (0.00).</p>
+  <ul>
+    <li><b>Overwrite probe — DONE, found something bigger:</b> no recency gradient at all; models learned target-always-first. Positional shortcut, not overwrite.</li>
+    <li><b>Campfire retest — DONE:</b> fair slots, still mush (flat ~0.40, no lookup). Verdict stands.</li>
+    <li><b>Split the tie — DONE:</b> attention wins outright (~0.80 real lookup vs ~chance). No mesh; the notebook family never learned lookup.</li>
+    <li><b>HYBRID (approved):</b> geometric/wedge keys + addressing read head — can a query learn to point with non-attention features? The paper's door #3, and attentionless's last honest shot.</li>
+    <li><b>Evo returns</b> through the unseen-pairs door: gate genes + fair-slot homework + holdout exams (breeder bugfix still in notes, not in the lab).</li>
+    <li><b>Parked:</b> referee-as-default, settle-training v2.</li>
+    <li><b>Vision (future, not a phase):</b> Pokémon — a Deep Blue for Pokémon: the domain where this learner proves itself (teambuilding = long-horizon composition, battles = reasoning under hidden information). Phase 2 is rehearsal for that.</li>
+  </ul>
+  <p class="hidden-note">Reading order I recommend: Huginn abstract + sections 1–3, then s1 (short), then CoT intro, then Huginn 5–7. You only need 3 deeply for building.</p>
+  <div class="eli5"><b>ELI5 — the whole shelf in one breath:</b> CoT is thinking <i>out loud</i>, in words. s1 is the teacher saying "wait, double-check that" whenever you try to stop — you often fix yourself. Huginn is thinking <i>quietly</i>, no talking at all. o1 is the famous think-longer machine everyone copies. The new Grassmann paper asks: what if you don't need the giant spotlight (attention) at all — what if you just check how much neighboring words disagree with each other? Almost as good, and the math is tidy enough that we might actually understand it.</div>
+</section>
+
+<section class="card">
+  <h2>Appendix F · Run it fully offline — laptop, cluster, or EKS</h2>
+  <p>Sections 1–3 and 5 above are already pure static JS — no network at all. Section 4 now has two backends: tick <b>force offline</b> up there to rehearse the cluster build right here on this page.</p>
+  <ul>
+    <li><b>Laptop:</b> serve this folder statically — <span class="mono">python3 -m http.server 8000</span> then open <span class="mono">http://localhost:8000/</span>. Only <span class="mono">index.html</span> + <span class="mono">src/*.js</span> are needed. <span class="mono">main.pjs</span> and <span class="mono">imports/</span> are Perchance-only and ignored offline.</li>
+    <li><b>Cluster (any static host):</b> copy <span class="mono">index.html</span> + <span class="mono">src/</span> to nginx / S3+CloudFront / any intranet box. Zero env vars, zero keys.</li>
+    <li><b>EKS:</b> build <span class="mono">Dockerfile</span> in this repo (<span class="mono">nginx:alpine</span> + these static files), push to ECR, apply <span class="mono">k8s/</span>. CPU-only nodes are fine for this lab. Full recipe in <span class="mono">src/DEPLOY.md</span>.</li>
+    <li><b>Full offline reasoning (open questions, no Perchance):</b> point the lab at a local model server instead of the built-in demo solver — e.g. Huginn weights under vLLM, or our Phase-2 tiny net. The seam is one function: <span class="mono">window.TeachingLab.ask()</span> in <span class="mono">src/inference.js</span>.</li>
+  </ul>
+  <p class="hidden-note">GPU note: the real 3.5B Huginn needs a GPU node group (and ~8–16GB VRAM quantized) — that runs as a <i>separate</i> service beside this static page. The lab itself and the Phase-2 tiny net run on CPU.</p>
+  <div class="eli5"><b>ELI5:</b> take the lab camping — no internet, no keys, still works. Laptop, cluster, or cloud: same page, same puzzles.</div>
+</section>
+
+<section class="card">
+  <h2>Appendix G · Phase 2 — teach a tiny net to learn</h2>
+  <div class="eli5"><b>Status (2026-11-08 — read this first):</b> the desert was unfair homework (practiced short, tested long) — but the first fix taught a sneakier shortcut (target always first). Hardened homework (random target slots) gives the honest scoreboard: <b>attention ~0.80 real lookup, notebook family ~chance</b>. New dragons: unseen pairs (0.00), and pushing attention past 0.80. Train below to reproduce any of it — the ELI5 boxes underneath are the <i>history</i> of how we got here, gameplan lives in §5. Vision: a Deep Blue for Pokémon — Phase 2 is rehearsal for that.</div>
+  <p>A real recurrent-depth network in <span class="mono">src/tinynn/</span>, trained live here on CPU. Same macro design as the paper: prelude embeds, core loops with the input re-injected, coda decodes. Three moves, the full learning-to-learn loop: learn a task, think longer at test time, adapt fast to something new.</p>
+  <div class="controls">
+    <select id="t2TaskEl" style="max-width:300px">
+      <option value="parity6">parity — train len 3 to 6, test len 10</option>
+      <option value="parityR">parity running-state (step-supervised) — train ≤6, test 10/20</option>
+      <option value="assocR">assoc-recall — keys→values lookup (attention core) — train ≤3 pairs, test 4/6</option>
+      <option value="assocG">assoc-recall geometry — 2d-pure ruler (no attention) — tests the kill set</option>
+      <option value="assocC">assoc-recall carry — 2d-carry (gossip + notebook + don't-drop loss)</option>
+      <option value="assocC_lin">assoc-recall carry, LINEAR mixer ablation (same window, no wedge)</option>
+      <option value="assocC_none">assoc-recall carry, NO mixer ablation (notebook alone)</option>
+      <option value="assocC_camp">assoc-recall CAMPFIRE — global summary + gossip + notebook (paper bullet #1)</option>
+      <option value="assocC_choosy">assoc-recall CHOOSY FIRE — learned write-gate + gossip + notebook (beats the mush?)</option>
+      <option value="assocC_gist">assoc-recall GIST — query-conditioned value persistence + choosy fire (transit test)</option>
+      <option value="assocC_gistq">assoc-recall GIST+QUERYHEAD — reader sees the question (readout test)</option>
+      <option value="modadd7">mod-add — train 2+3 term mod 7, test 4-term</option>
+    </select>
+    <select id="t2DepthEl" style="max-width:220px">
+      <option value="mix">train depth: mixed 1 to 4, paper style</option>
+      <option value="1">train depth: fixed at 1</option>
+    </select>
+    <select id="t2StepsEl" style="max-width:160px">
+      <option value="600">600 steps, fast</option>
+      <option value="1200" selected>1200 steps</option>
+      <option value="2000">2000 steps, slow</option>
+    </select>
+    <select id="t2SettleEl" style="max-width:230px">
+      <option value="0">settle training: off (grade last round only)</option>
+      <option value="0.5">settle training: on (grade every depth round)</option>
+    </select>
+    <select id="t2HwEl" style="max-width:250px" title="Fair homework mixes long-gap examples with RANDOM target slots into training (the 2026-11-08 fix, hardened after the positional-shortcut find). Short-only reproduces the old unfair regime.">
+      <option value="fair">homework: fair (mixed short+long)</option>
+      <option value="short">homework: short only (classic)</option>
+    </select>
+    <label title="Gradient surgery: conflicting teacher gradients are projected apart before each step. Use when multiple supervisions fight on one readout."><input type="checkbox" id="t2PcgradEl" style="width:auto"> gradient surgery (PCGrad)</label>
+  </div>
+  <div class="controls">
+    <button id="t2TrainBtn">train tiny net</button>
+    <button id="t2AdaptBtn" disabled>adapt to variant, 60 steps</button>
+    <button id="t2SanityBtn">fresh-eyes check</button>
+    <span class="hidden-note" id="t2StatusEl">idle — nothing trained yet</span>
+  </div>
+  <div class="grid2">
+    <div><div class="hidden-note">training loss, live</div><canvas id="lossCanvasEl" width="800" height="240" style="width:100%;height:210px;background:#070b12;border:1px solid #26314a;border-radius:10px"></canvas></div>
+    <div><div class="hidden-note">hard-set accuracy vs thinking depth r</div><canvas id="curveCanvasEl" width="800" height="240" style="width:100%;height:210px;background:#070b12;border:1px solid #26314a;border-radius:10px"></canvas></div>
+  </div>
+  <div class="eli5"><b>ELI5 — the three new experiments:</b> <b>Gist</b> = once Milo's name gets asked about, the teacher names Milo's cup at <i>every</i> step — never drop it. <b>Settle training</b> = grade every round of thinking, not just the last, so the thinking sculpts itself into an answer. <b>Evolution</b> = breed whole schools of tiny gates and keep the bloodlines that learn fastest. <i>Parked:</i> the breeder was re-dealing the same test cards (seed bug — fix in notes, not in the lab yet). <b>Query-head (newest):</b> the kid answering finally gets to <i>see the question</i> while reading the note. <b>The homework fix (2026-11-08 — the big one):</b> we were only <i>practicing</i> short quizzes and <i>testing</i> long ones. Once practice included long quizzes too, everyone scored 1.00 — then we caught them cheating: the answer was always hidden in the <i>same</i> spot. With hiding spots randomized, the honest scores are <b>attention ~0.80 real lookup, notebook family ~chance</b>. The wall was the homework, but fair homework has to randomize <i>where</i> too, not just <i>how far</i>. <b>Combo (run):</b> its 1.00 is retracted (same hiding-spot cheat) — redo pending under fair slots. <b>Gradient surgery:</b> the referee — helped when homework was unfair (0.365 → 0.445 back then), slightly in the way now (1.00 → ~0.87). Tick the box only for unfair-homework experiments.</div>
+  <div id="t2ReportEl" style="white-space:pre-wrap;font-size:13px;color:#9fb0c9;background:#070b12;border:1px solid #26314a;border-radius:10px;padding:10px;margin-top:10px;min-height:60px">report: train a net to fill this in.</div>
+  <div id="t2SanityEl" class="hidden-note" style="margin-top:8px">fresh eyes: press the button after a training report exists — a brand-new, context-free AI read of that report lands here (blunt, technical, ELI5 ignored).</div>
+  <p class="hidden-note">Honest scope: pooled-MLP, running-state, single-head attention, or geometry/gist/query-head cores (task box). Curves are measured, not staged: if extra depth does not help on some task, the bars will say so.</p>
+  <div class="eli5"><b>ELI5 — read this before pressing train:</b> we grow a tiny brain in your browser and teach it baby puzzles. <b>Loss</b> = how wrong it is (watch it fall). <b>Accuracy</b> = how often it's right. The <b>hard set</b> = puzzles it never studied (the real exam). A rising <b>depth curve</b> = thinking longer helps. <b>Adapt</b> = learn a new puzzle fast using the old one (learning <i>how</i> to learn). <b>Attention</b> = a spotlight that looks back at earlier words. <b>Supervision</b> = teacher hints during thinking, not just a final grade. <b>Binding</b> = remembering Milo goes with the red cup, so when Milo is asked about later, you fetch red. <b>Geometry (the 2d ruler — pick it in the task box):</b> neighbors compare arrows instead of using the spotlight; it is <i>supposed</i> to fail questions asked from far away. The <b>kill set</b> = one name at the very start, question at the very end. <b>Carry (the 2d hope — measured 2026-11-08):</b> gossip <i>plus</i> the notebook, graded on never dropping the note. Result: the plain notebook matched it (in-dist 0.86 vs 0.73!) and <i>back then</i> NOTHING crossed long gaps (kill ~0.36, gap-20 ~0.33 for all) — but that was the unfair-homework era (practice short, test long). Retested on fair homework, even the plain notebook reaches ~0.90 and attention/choosy hit 1.00. The gossip-drag verdict is mismatch-era and unretested on fair homework. The <b>campfire (measured too):</b> a running average of all thoughts, whispered into every step — also failed <i>back then</i> (kill 0.32, gap-20 0.32). NOT retested on fair homework yet — the mush verdict is mismatch-era and may not survive. One run could settle it. <b>Choosy fire (measured too):</b> the net learned its <i>own</i> gate — which thoughts to pin to the board, which to let blow past. The gate moved (some pins nearly shut, some wide open) — but the wall didn't budge <i>then</i>: kill 0.38, gap-20 0.32. On position-fixed homework the choosy+question-reader combo scored 1.00 at every depth — then the hiding-spot test exposed it: with slots randomized it falls to ~chance. The gate learned <i>where</i>, not <i>what</i>. Retracted; attention stands alone. <b>X-ray (fresh-eyes test, decisive):</b> froze the brain mid-thought and checked — the note <i>is</i> written perfectly (100%), but — on unfair homework — dies crossing the room; the reader reads faithfully, there's just nothing left. That was a <i>practice</i> problem wearing a carrying-problem costume: with long practice, transit survives (probe 1.00, kill 1.00). <b>Settling test (also decisive):</b> froze the brain and let the question rattle around inside for 8 extra rounds — nothing improved (still ~0.30). Thinking only finds answers if the brain was <i>trained</i> to settle, not just trained to answer. (Stands — but whether settle-training adds anything <i>on top of</i> fair homework is untested.) <b>100-round check (also flat):</b> rolled 100 times while shouting the question louder each round — still nothing (early wiggles faded by round 100). Not slow — just unfair homework. On fair homework the desert blooms (gap-20: 1.00). The newest paper's idea (now a lab experiment): skip the spotlight and just measure how much neighboring arrows disagree. <b>New dragon (2026-11-08):</b> pairs Milo never saw: 0.00 — memorized cards, no lookup trick. Gameplan in §5.</div>
+</section>
+</div>
+
+<script src="src/offline-solver.js"></script>
+<script src="src/inference.js"></script>
+<script src="src/tinynn/nn.js"></script>
+<script src="src/tinynn/tasks.js"></script>
+<script src="src/tinynn/train.js"></script>
+<script src="src/tinynn/pcgrad.js"></script>
+<script src="src/tinynn/evo.js"></script>
+<script>
+// ---------- section 1: depth slider ----------
+(function(){
+  const r = document.getElementById("depthRangeEl");
+  const v = document.getElementById("depthValEl");
+  const f = document.getElementById("flopsEl");
+  const g = document.getElementById("gainEl");
+  const m = document.getElementById("depthMsgEl");
+  function upd(){
+    const k = +r.value; v.textContent = k; f.textContent = "~" + k + "× core";
+    g.textContent = k <= 2 ? "baseline — single pass" : k <= 8 ? "reasoning ↑ · facts →" : k <= 32 ? "reasoning ↑↑ · facts →" : "diminishing except hard math";
+    m.textContent = k >= 50 ? "paper: gains continue past 50× on hard reasoning" : "";
+  }
+  r.addEventListener("input", upd); upd();
+})();
+
+// ---------- section 3: orbit visualizer (fake 2D projection of s_i dynamics) ----------
+(function(){
+  const cv = document.getElementById("orbitCanvasEl");
+  const ctx = cv.getContext("2d");
+  const btn = document.getElementById("orbitRunBtn");
+  const modeEl = document.getElementById("orbitModeEl");
+  const msg = document.getElementById("orbitMsgEl");
+  let anim = null;
+  function targetFor(mode, t){
+    if(mode === "fact") return {x: 620, y: 150};
+    // math target drifts slightly = problem needs re-orientation
+    return {x: 560 + 40*Math.sin(t*0.05), y: 150 + 30*Math.cos(t*0.03)};
+  }
+  btn.onclick = () => {
+    if(anim) cancelAnimationFrame(anim);
+    const mode = modeEl.value;
+    let s = {x: 120 + Math.random()*40, y: 120 + Math.random()*60}; // random s_0 like the paper
+    const trail = [{...s}];
+    let i = 0; const R = mode === "fact" ? 24 : 90;
+    msg.textContent = "iterating R … 0/" + R;
+    function step(){
+      const e = targetFor(mode, i);
+      // R(e, s): pull toward e + rotational component that decays (orbiting -> settling)
+      const pull = mode === "fact" ? 0.22 : 0.08;
+      const rot = mode === "fact" ? 0.02 : 0.35 * Math.exp(-i/35);
+      const dx = e.x - s.x, dy = e.y - s.y;
+      s = { x: s.x + pull*dx - rot*dy*0.15, y: s.y + pull*dy + rot*dx*0.15 };
+      trail.push({...s}); i++;
+      // draw
+      ctx.clearRect(0,0,cv.width,cv.height);
+      // e marker
+      ctx.fillStyle = "#6fcf97"; ctx.beginPath(); ctx.arc(e.x*cv.width/800, e.y, 6, 0, 7); ctx.fill();
+      ctx.fillStyle = "#6fcf97"; ctx.font = "12px sans-serif"; ctx.fillText("embedded input e", e.x*cv.width/800 - 50, e.y - 12);
+      // trail
+      ctx.strokeStyle = mode === "fact" ? "#7fb8ff" : "#f2c94c"; ctx.lineWidth = 2; ctx.beginPath();
+      trail.forEach((p,j)=>{ const X = p.x*cv.width/800, Y = p.y; j ? ctx.lineTo(X,Y) : ctx.moveTo(X,Y); });
+      ctx.stroke();
+      // head
+      const h = trail[trail.length-1];
+      ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(h.x*cv.width/800, h.y, 5, 0, 7); ctx.fill();
+      ctx.fillStyle = "#8ea0bd"; ctx.font = "12px sans-serif";
+      ctx.fillText("s_0 random start", 20, 20); ctx.fillText("s_" + i, h.x*cv.width/800 + 10, h.y);
+      msg.textContent = "iterating R … " + i + "/" + R + (i >= R ? " — settled (coda decodes s_r)" : "");
+      if(i < R) anim = requestAnimationFrame(step);
+    }
+    step();
+  };
+})();
+
+// ---------- section 4: live depth test (online OR offline) ----------
+(function(){
+  // Offline portability + engine double-render guard: collapse "[title]" or
+  // a duplicated render ("X"+"X") back to a single title string. The engine
+  // can re-insert the evaluated binding after scripts run, so watch it.
+  try {
+    const h1 = document.querySelector("header.hero h1");
+    if (h1) {
+      const fix = () => {
+        const t = h1.textContent.trim();
+        if (t === "[title]") h1.textContent = "Teaching Small Models to Learn";
+        else if (t.length % 2 === 0 && t.length > 0 && t.slice(0, t.length / 2) === t.slice(t.length / 2)) {
+          h1.textContent = t.slice(0, t.length / 2);
+        }
+      };
+      fix();
+      new MutationObserver(fix).observe(h1, { childList: true, characterData: true, subtree: true });
+    }
+  } catch (e) {}
+
+  const qPick = document.getElementById("qPickEl");
+  const qInput = document.getElementById("qInputEl");
+  const kPick = document.getElementById("kPickEl");
+  const btn = document.getElementById("askBtn");
+  const status = document.getElementById("askStatusEl");
+  const log = document.getElementById("liveLogEl");
+  const ans = document.getElementById("liveAnswerEl");
+  const badge = document.getElementById("modeBadgeEl");
+  const forceOff = document.getElementById("forceOffEl");
+  qPick.onchange = () => { qInput.value = qPick.value; };
+  function say(t){ log.textContent = t; }
+  function refreshBadge(){
+    try { badge.textContent = "backend: " + window.TeachingLab.mode(); } catch (e) { badge.textContent = "backend: offline (local)"; }
+  }
+  forceOff.onchange = () => { window.TeachingLab.forceOffline = forceOff.checked; refreshBadge(); };
+  refreshBadge();
+
+  btn.onclick = async () => {
+    const Q = qInput.value.trim();
+    if(!Q) return;
+    const K = +kPick.value;
+    btn.disabled = true; ans.hidden = true;
+    const t0 = performance.now();
+    try{
+      const prog = (k, n) => {
+        status.innerHTML = '<span class="spinner"></span>hidden round ' + k + "/" + n + " (drafts stay hidden)";
+        say("log: round " + k + "/" + n + " refining in hidden space…");
+      };
+      prog(1, K);
+      const r = await window.TeachingLab.ask(Q, K, prog);
+      ans.textContent = r.answer;
+      ans.hidden = false;
+      const dt = (r.elapsedSec != null ? r.elapsedSec : (performance.now()-t0)/1000).toFixed(1);
+      if (r.mode === "online") {
+        say("log: done [" + r.mode + "]. calls=" + r.calls + " · measured ~" + r.tokensIn + " in / ~" + r.tokensOut + " out tokens (" + (r.measured ? "live tokenizer" : "chars/4 estimate") + ") · wall " + dt + "s. True Huginn: same thinking ≈ 0 new tokens, ~" + K + "× FLOPs.");
+      } else {
+        say("log: done [" + r.mode + ", zero network]. rounds=" + r.calls + " · wall time " + dt + "s · tokens=0. Same shape as the paper: trick questions move with K, facts stay flat.");
+      }
+      status.textContent = "done in " + dt + "s [" + r.mode + "]";
+      refreshBadge();
+    } catch(e){
+      say("log: error — " + (e && e.message ? e.message : e));
+      status.textContent = "error";
+    } finally { btn.disabled = false; }
+  };
+  window.__latentAsk = () => btn.click();
+})();
+
+// ---------- section 7: train the tiny net (learning to learn) ----------
+(function(){
+  const taskEl = document.getElementById("t2TaskEl");
+  const depthEl = document.getElementById("t2DepthEl");
+  const stepsEl = document.getElementById("t2StepsEl");
+  const trainBtn = document.getElementById("t2TrainBtn");
+  const adaptBtn = document.getElementById("t2AdaptBtn");
+  const sanityBtn = document.getElementById("t2SanityBtn");
+  const settleEl = document.getElementById("t2SettleEl");
+  const sanityEl = document.getElementById("t2SanityEl");
+  const status = document.getElementById("t2StatusEl");
+  const report = document.getElementById("t2ReportEl");
+  const lossCv = document.getElementById("lossCanvasEl");
+  const curveCv = document.getElementById("curveCanvasEl");
+  let session = null;
+
+  function drawLoss(hist) {
+    const ctx = lossCv.getContext("2d");
+    ctx.clearRect(0, 0, lossCv.width, lossCv.height);
+    if (!hist.length) return;
+    let mn = Infinity, mx = 0;
+    hist.forEach(h => { mn = Math.min(mn, h.loss); mx = Math.max(mx, h.loss); });
+    const lo = Math.log(mn + 1e-9), hi = Math.log(mx + 1e-9), span = Math.max(hi - lo, 1e-6);
+    ctx.strokeStyle = "#7fb8ff"; ctx.lineWidth = 2; ctx.beginPath();
+    hist.forEach((h, i) => {
+      const X = 30 + (i / Math.max(hist.length - 1, 1)) * (lossCv.width - 40);
+      const Y = lossCv.height - 20 - ((Math.log(h.loss + 1e-9) - lo) / span) * (lossCv.height - 40);
+      i ? ctx.lineTo(X, Y) : ctx.moveTo(X, Y);
+    });
+    ctx.stroke();
+    ctx.fillStyle = "#8ea0bd"; ctx.font = "12px sans-serif";
+    ctx.fillText("loss " + hist[hist.length - 1].loss.toFixed(3) + " (log scale)", 30, 16);
+  }
+
+  function drawCurve(curve) {
+    const ctx = curveCv.getContext("2d");
+    ctx.clearRect(0, 0, curveCv.width, curveCv.height);
+    const n = curve.length, bw = (curveCv.width - 40) / n;
+    curve.forEach((c, i) => {
+      const H = c.acc * (curveCv.height - 60);
+      const X = 20 + i * bw + 6, Y = curveCv.height - 24 - H;
+      ctx.fillStyle = c.r === 1 ? "#7fb8ff" : "#6fcf97";
+      ctx.fillRect(X, Y, bw - 12, H);
+      ctx.fillStyle = "#dbe2ef"; ctx.font = "12px sans-serif"; ctx.textAlign = "center";
+      ctx.fillText("r=" + c.r, X + (bw - 12) / 2, curveCv.height - 8);
+      ctx.fillText((c.acc * 100).toFixed(0) + "%", X + (bw - 12) / 2, Y - 5);
+    });
+    ctx.textAlign = "left";
+  }
+
+  function pct(x) { return (x * 100).toFixed(1) + "%"; }
+
+  // Fair-homework pool (2026-11-08 fix): half short (task.makeTrain) + half
+  // long-gap (assoc kill-format fill-8, or 8-pair for assocR). Falls back to
+  // short-only for non-assoc tasks. Seeds fixed so the exam stays disjoint.
+  function buildHomework(task, mode) {
+    const short = task.makeTrain(7);
+    if (mode !== "fair") return short;
+    const T = window.TinyNN, G = T.TASKS.assocG, rng = T.makeRng(71), long = [];
+    try {
+      if (task.makeKill && task.vocab === 9) {
+        for (let i = 0; i < 500; i++) {
+          const tk = rng.int(4), tv = rng.int(4), pos = rng.int(9), x = [];
+          for (let s = 0; s <= 8; s++) {
+            if (s === pos) { x.push(tk, 4 + tv); continue; }
+            let k = rng.int(4);
+            while (k === tk) k = rng.int(4);
+            x.push(k, 4 + rng.int(4));
+          }
+          x.push(tk, 8);
+          long.push({ x, y: tv });
+        }
+      } else if (task.gen && task.vocab === 9) {
+        for (let i = 0; i < 500; i++) long.push(task.gen(rng, 8));
+      } else return short;
+    } catch (e) { return short; }
+    return short.concat(long);
+  }
+
+  trainBtn.onclick = async () => {
+    if (!window.TinyNN) { report.textContent = "report: tinynn scripts failed to load."; return; }
+    trainBtn.disabled = true; adaptBtn.disabled = true; session = null;
+    try {
+      const key = taskEl.value;
+      const task = window.TinyNN.TASKS[key];
+      const rMode = depthEl.value === "1" ? 1 : "mix";
+      const steps = +stepsEl.value;
+      const settleW = settleEl ? +settleEl.value : 0;
+      const cfg = { vocab: task.vocab, classes: task.classes, h: 48, m: 96, d: task.attnD || 16, maxLen: task.maxLen || 0, arch: task.arch || "rec", geoMode: task.geoMode || "full", queryHead: task.queryHead || false, prefixLabels: task.prefixLabels || null, attnAux: task.attnAux || false, attnAuxW: task.attnAuxW || 0, depthAuxW: settleW };
+      const hwMode = ((document.getElementById("t2HwEl") || {}).value) || "fair";
+      const train = buildHomework(task, hwMode);
+      const liveHist = [];
+      status.innerHTML = '<span class="spinner"></span>training ' + task.label + " …";
+      report.textContent = "report: training…";
+      const useSurgery = !!(document.getElementById("t2PcgradEl") || {}).checked && !!window.TinyNN.trainPCGrad;
+      const out = await (useSurgery ? window.TinyNN.trainPCGrad : window.TinyNN.trainModel)(
+        Object.assign({ train, steps, batch: 16, lr: 5e-3, rMode, seed: 7 }, cfg),
+        (tk) => {
+          status.innerHTML = '<span class="spinner"></span>step ' + tk.step + " / " + tk.of + " — loss " + tk.loss.toFixed(3);
+          liveHist.push({ step: tk.step, loss: tk.loss });
+          drawLoss(liveHist);
+        }
+      );
+      drawLoss(out.hist);
+      const testIn = task.makeTestIn();
+      const hard = task.makeTestHard(21);
+      const accIn = window.TinyNN.evaluate(out.model, testIn, 4).acc;
+      const curve = window.TinyNN.depthCurve(out.model, hard, [1, 2, 4, 8, 16]);
+      drawCurve(curve);
+      const variantData = task.makeVariant(33);
+      session = { key, model: out.model, variantData, cfg, task };
+      const gain = curve.map(c => "r=" + c.r + " " + pct(c.acc)).join("  ");
+      const first = curve[0].acc, last = curve[curve.length - 1].acc;
+      const chance = 1 / (task.classes || 2);
+      const verdict = last >= first + 0.03
+        ? "thinking longer helped on the hard set — the paper's shape at bench scale."
+        : (first >= 0.9
+          ? "solved already at r≈1 — the representation (or lookup) itself carries the rule, depth is unneeded here."
+          : (first <= chance + 0.1
+            ? "flat near chance — this core/recipe does not crack the hard set. Honest negative, see notes below."
+            : "flat in the middle — partial transfer at every depth; depth neither helps nor hurts here."));
+      let xlongLine = "";
+      if (task.makeTestXLong) {
+        const xlong = task.makeTestXLong(77);
+        const x1 = window.TinyNN.evaluate(out.model, xlong, 1).acc;
+        const x4 = window.TinyNN.evaluate(out.model, xlong, 4).acc;
+        xlongLine = "\n" + (task.xlongNote || "extra-long set") + ": r=1 " + pct(x1) + " vs r=4 " + pct(x4) +
+          (x4 >= 0.9 ? " — generalizes by construction." : " — partial transfer; the rule is there but noisy at this size.");
+      }
+      report.textContent =
+        "train loss " + out.firstLoss.toFixed(3) + " -> " + out.lastLoss.toFixed(3) +
+        " · in-distribution acc " + pct(accIn) + " (r=4)" +
+        (settleW > 0 ? " · settle-trained (every depth round graded)" : "") +
+        (hwMode === "fair" ? " · fair homework (mixed short+long, random slots)" : " · short-only homework (classic)") +
+        (useSurgery ? " · gradient surgery (PCGrad — conflicting teacher grads projected apart)" : "") +
+        (cfg.queryHead ? " · query-head readout (reader sees the question)" : "") +
+        (task.prefixLabels ? " · step-supervised (running labels)" : "") +
+        (task.attnAux ? " · attention-supervised (selection labels)" : "") +
+        "\nhard set (never trained on): " + gain +
+        "\n" + verdict +
+        xlongLine +
+        "\nNow press adapt: 60 steps on the variant, prior vs from-scratch.";
+      status.textContent = "trained — curve done";
+      adaptBtn.disabled = false;
+    } catch (e) {
+      report.textContent = "report: error — " + (e && e.message ? e.message : e);
+      status.textContent = "error";
+    } finally { trainBtn.disabled = false; }
+  };
+
+  adaptBtn.onclick = async () => {
+    if (!session) return;
+    adaptBtn.disabled = true; trainBtn.disabled = true;
+    try {
+      status.innerHTML = '<span class="spinner"></span>adapting to variant (60 steps, prior vs scratch)…';
+      const r = await window.TinyNN.adaptExperiment(session.model, session.variantData,
+        Object.assign({ steps: 60, lr: 5e-3, seed: 7 }, session.cfg));
+      const extra = "\nadaptation: zero-shot " + pct(r.before) +
+        " -> prior " + pct(r.after) + " vs from-scratch " + pct(r.scratchAcc) +
+        " in the same 60 steps." +
+        (r.after > r.scratchAcc + 0.03 ? " The trained net learned how to learn." : " No meta edge this run — the prior did not transfer. Try more train steps.");
+      report.textContent += extra;
+      status.textContent = "adaptation done";
+    } catch (e) {
+      report.textContent += "\nadapt error — " + (e && e.message ? e.message : e);
+      status.textContent = "error";
+    } finally { adaptBtn.disabled = false; trainBtn.disabled = false; }
+  };
+
+  // ---------- fresh-eyes check: stateless second opinion on the report ----------
+  // Each generateText call carries zero conversation memory, so this is a
+  // brand-new contextless reviewer reading ONLY the text we hand it.
+  sanityBtn.onclick = async () => {
+    const txt = (report.textContent || "").trim();
+    if (!txt || txt.indexOf("train a net to fill this in") >= 0) {
+      sanityEl.textContent = "fresh eyes: train a net first — there is no report to review yet.";
+      return;
+    }
+    sanityBtn.disabled = true;
+    sanityEl.innerHTML = '<span class="spinner"></span>asking a brand-new AI that has never seen this lab…';
+    try {
+      if (typeof root === "undefined" || !root.generateText) throw new Error("offline — no AI available for review");
+      const task = taskEl.options[taskEl.selectedIndex].text;
+      const res = await root.generateText(
+        "You are a ruthless ML reviewer. No prior conversation exists; judge ONLY the lab report below. Be blunt, terse, technical. No ELI5, no padding. Point at: confounds, numbers that don't prove what the author thinks, missing controls, and the one cheapest next experiment.\n\nTASK: " + task + "\nREPORT:\n" + txt.slice(0, 3000));
+      sanityEl.textContent = "fresh eyes says: " + String(res && res.text ? res.text : res);
+    } catch (e) {
+      sanityEl.textContent = "fresh eyes: unavailable — " + (e && e.message ? e.message : e);
+    } finally { sanityBtn.disabled = false; }
+  };
+})();
+// ---------- ELI5 mode toggle (persisted) ----------
+(function(){
+  const box = document.getElementById("eli5El");
+  if (!box) return;
+  const KEY = "latentLab:eli5";
+  let on = false;
+  try { on = localStorage.getItem(KEY) === "1"; } catch (e) {}
+  box.checked = on;
+  document.body.classList.toggle("eli5-on", on);
+  box.addEventListener("change", () => {
+    document.body.classList.toggle("eli5-on", box.checked);
+    try { localStorage.setItem(KEY, box.checked ? "1" : "0"); } catch (e) {}
+  });
+})();
+</script>
