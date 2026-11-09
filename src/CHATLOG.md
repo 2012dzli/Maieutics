@@ -446,3 +446,5 @@ never "feels faster" — wall time, accuracy, loss, token counts.
 - INTRO VS GAMEPLAN 3+3 (user: do fresh eyes return the same thing?): 6/6 on-brief, 6/6 MATCH=yes. Intro readers: program=nursery, paper=first step. Plan readers: program=nursery, role=roadmap. Decisive quotes = new P0 scope sentences. No drift, no patch. Results: scratch/fresh-eyes-intro-vs-gameplan-3x3-results.md.
 
 - PUSH PREP 2026-11-09 (user: push with fresh PAT): bundling dict full-paper (28 entries/39 links §§1-8), intro reframe (program P0 + §2 opener + claim-map promote), inference.js namespace merge fix, intro-vs-gameplan 3+3 cross-check (6/6 MATCH).
+
+- PUSHED 2026-11-09 (user: push with PAT): fast-forward 5476a3c → e9b83c6, 23/23 files via git-blobs API (dict full-paper + intro reframe + inference merge + 3+3 cross-check). Verified via update-ref 200.
