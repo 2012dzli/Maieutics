@@ -452,3 +452,5 @@ never "feels faster" — wall time, accuracy, loss, token counts.
 - LIVING DOC 2026-11-09 (user: draft must say it updates after steps so it never falls behind): draft banner gains fixed update order (§4 → §6 → §7 → dictionary); new d-livingdoc entry (2 lvl, defaults Simple). Verified live: 29 entries, banner link opens correct tabs.
 
 - PUSH PREP 2026-11-09 (user: push with PAT): living-document banner + d-livingdoc entry.
+
+- PUSHED 2026-11-09 (user: push with PAT): fast-forward f141c39 → b4df7d1, 23/23 files (living-document banner + d-livingdoc). Verified via update-ref 200.
