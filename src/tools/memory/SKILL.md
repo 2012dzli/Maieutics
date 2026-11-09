@@ -32,7 +32,8 @@ of bench-science sessions with dozens of compactions.
    one dated entry per session: decisions, MEASURED numbers (numbers
    sacred — wall time, accuracy, loss, never "feels faster"), failures
    and why. This + git is the only layer that survives everything. Rule:
-   link code paths, not whole code.
+   link DURABLE code paths (tracked + pushed), not whole code — a link
+   into `scratch/` is a link into a cache, and caches get wiped.
 
 Durability order (weakest → strongest): working record < run logs <
 snapshots (all `scratch/`, private, may not survive a reload or a new
@@ -52,6 +53,15 @@ unpushed session is a session at risk; say so in the log.
   (every run appends + saves), so an interrupted run resumes from the
   file, not from scratch. Scripts filter `done` from the results file on
   start. Proven: an 8-seed wave interrupted mid-run resumed cleanly.
+- **Promote-or-recipe.** A script that produces a MEASURED number is data,
+  not scaffolding: it must live in a tracked path (`src/`, committed +
+  pushed), or its full recipe (exact config, seeds, and every method delta
+  vs checked-in code) must sit in the results file beside the numbers.
+  Numbers whose script is gone are hearsay — flag them as such and never
+  build on them silently. (This rule exists because the D-wave scripts
+  lived only in `scratch/` and did not survive a wipe: the numbers
+  survived, the method didn't, and the G series had to be rebuilt from
+  prose. `src/tinynn/gseries.js` is the first compliant rebuild.)
 - **Append-only logs.** Never rewrite history; supersede explicitly
   ("X retracted, Y measured instead") with a pointer. Retractions are
   first-class entries — the log must show the error AND the correction.

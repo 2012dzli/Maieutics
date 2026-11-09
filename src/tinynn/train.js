@@ -717,5 +717,5 @@ async function quickPcgradTest() {
     ok: math === "ok" && isFinite(out.lastLoss) && out.lastLoss < out.firstLoss && finite };
 }
 
-window.TinyNN = { TASKS, trainModel, trainPCGrad, evaluate, depthCurve, adaptExperiment, quickSelfTest, quickAttnTest, quickGeoTest, quickCarryTest, quickCampTest, quickChoosyTest, quickProbeTest, quickSettleTest, quickGistTest, quickDepthAuxTest, quickQueryHeadTest, quickPcgradTest, probeLinear, settleProbe, gistProbe, geoInspect, RecModel, SeqModel, AttnModel, GeoModel, makeRng };
+window.TinyNN = { TASKS, trainModel, trainPCGrad, makeModel, attnSupervision, evaluate, depthCurve, adaptExperiment, quickSelfTest, quickAttnTest, quickGeoTest, quickCarryTest, quickCampTest, quickChoosyTest, quickProbeTest, quickSettleTest, quickGistTest, quickDepthAuxTest, quickQueryHeadTest, quickPcgradTest, probeLinear, settleProbe, gistProbe, geoInspect, RecModel, SeqModel, AttnModel, GeoModel, makeRng };
 })();
