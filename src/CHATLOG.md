@@ -413,3 +413,4 @@ never "feels faster" — wall time, accuracy, loss, token counts.
   Bad credentials on both. User already rotated/revoked. No valid tokens remain in play;
   future pushes need a fresh PAT.
 - SCRUBBED (user: remaking repo, distancing): all private-remote identifiers + old display/code names removed workspace-wide (namespace now window.TeachingLab); verified live (refresh clean, ask→"Paris"). Zero grep hits remain.
+- PUSHED (user: push remade Maieutics with fresh PAT): repo was empty (no main); seed via contents API then full tree, 23/23 verified, commit a77e796. Scrubbed tree live in public.

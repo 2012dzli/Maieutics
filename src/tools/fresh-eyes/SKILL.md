@@ -158,6 +158,44 @@ Rules for armed rounds:
   "Research errs like fresh-eyes reviewers do" — verify against your own
   code/numbers before using anything.
 
+## Iteration: the version loop (review → patch → re-run)
+
+One round tells you what's wrong; only the loop makes the document
+better. This is the method that took the gameplan v1→v5, and the one
+to use on any load-bearing document (the paper draft's upcoming
+battery is steps 1–2 of this loop).
+
+1. **Version and freeze.** Tag the artifact (v0.1, v0.2...) and hand
+   reviewers the frozen copy. Never review a moving target — a finding
+   against v0.1 must still be checkable after you patch.
+2. **Run a battery.** One or more formats against the frozen version
+   (barrage for breadth, armed round for prior art, red-team for
+   kill-shots). Same artifact for every reviewer in the round.
+3. **Adjudicate once.** Accept / reject / partially, all logged. The
+   output of a round is a patch list, not a mood.
+4. **Patch in one pass.** Batch all accepted findings into a single
+   revision, then version up. Preserve-what-works: sections no
+   reviewer faulted stay untouched — rewrites reset the evidence you
+   already banked.
+5. **Re-run on the new version.** Same ask, fresh reviewers (never
+   reuse reviewers across versions — they grade their own advice).
+   Compare across versions: adoptions-per-round should fall; repeat
+   complaints should die. A complaint that survives the patch meant
+   to fix it is a finding about YOUR patch, not the document.
+6. **Stop by the stop rule.** Two barren rounds in a row = done; a
+   10/10 steelman = satisfaction declared. Version-tag the finale.
+
+Worked example: gameplan v1→v5 — single checks + 10-reviewer
+barrages + blind tests + 14 armed rounds + red-team (9 findings
+adopted) + steelman close. Each version froze the premise artifact;
+stale-number corrections went back into the artifact before the next
+round (premise hygiene).
+
+Version log: one line per version in the durable log — what changed,
+which round's findings it answers, battery score (adoptions /
+reviewers). Results files carry the version:
+`scratch/fresh-eyes-<topic>-v<k>-<n>x-results.md`.
+
 ## Dependencies
 
 - `websearch` (optional) — required only for armed rounds; paste its recipe
