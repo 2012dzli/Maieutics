@@ -448,3 +448,7 @@ never "feels faster" — wall time, accuracy, loss, token counts.
 - PUSH PREP 2026-11-09 (user: push with fresh PAT): bundling dict full-paper (28 entries/39 links §§1-8), intro reframe (program P0 + §2 opener + claim-map promote), inference.js namespace merge fix, intro-vs-gameplan 3+3 cross-check (6/6 MATCH).
 
 - PUSHED 2026-11-09 (user: push with PAT): fast-forward 5476a3c → e9b83c6, 23/23 files via git-blobs API (dict full-paper + intro reframe + inference merge + 3+3 cross-check). Verified via update-ref 200.
+
+- LIVING DOC 2026-11-09 (user: draft must say it updates after steps so it never falls behind): draft banner gains fixed update order (§4 → §6 → §7 → dictionary); new d-livingdoc entry (2 lvl, defaults Simple). Verified live: 29 entries, banner link opens correct tabs.
+
+- PUSH PREP 2026-11-09 (user: push with PAT): living-document banner + d-livingdoc entry.
