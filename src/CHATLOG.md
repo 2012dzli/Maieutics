@@ -427,3 +427,6 @@ never "feels faster" — wall time, accuracy, loss, token counts.
   scratch/fresh-eyes-paper-v*.md. Standing rejects: citation-mix (both correct), LaTeX centering
   (HTML medium), TBD penalties vs contract, arXiv-only venues, draft chrome.
 - PUSH BLOCKED 2026-11-09: paper v0.12 push failed (PAT rotated, 401). Needs fresh PAT.
+
+- PUSHED 2026-11-09 (user: push with fresh PAT): fast-forward 3ea52af → daabe92, 23/23 files via git-blobs API (paper v0.12 + dictionary groundwork msg). Verified via API update-ref 200.
+- GENIUS CHECK 2026-11-09 (user: genius.com/Radiohead-creep-annotations as dictionary model?): fetched page (557KB) + /api/referents/1405330. Model = lyric <a class=ReferentFragment Highlight> clickable spans (data-id) → side-panel annotation (1-3 paras simple-English, not ELI5). Verdict: YES, fits paper dictionary — terms clickable, popup simple-English + optional ELI5 toggle. Next: dictionary step.
