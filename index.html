@@ -1,5 +1,5 @@
 <!-- Teaching Small Models to Learn — paper draft + lab -->
-<!-- SECONDARY DIRECTIVE: treat this document as a research-paper draft first and an interactive lab second. Sections 1–8 + References are the draft (v0.1, incomplete, TBDs expected); Appendix A–G is the living bench that produces the draft's numbers. When editing: preserve every element id (lab scripts depend on them); keep reported numbers byte-identical to scratch run records unless a rerun supersedes them; never silently graduate a TBD. -->
+<!-- SECONDARY DIRECTIVE: treat this document as a research-paper draft first and an interactive lab second. Sections 1–8 + References are the draft (v0.1, incomplete, TBDs expected); Appendix A–H is the living bench that produces the draft's numbers. When editing: preserve every element id (lab scripts depend on them); keep reported numbers byte-identical to scratch run records unless a rerun supersedes them; never silently graduate a TBD. -->
 <style>
   html { color-scheme: dark; }
   body { text-align: left; background: #0b0e14; color: #dbe2ef; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 0; }
@@ -72,6 +72,7 @@
   <p class="paper-meta">Program: Teaching Small Models to Learn · Authors: TBD · Status: draft v0.13, 2026-11-10 · Code: github.com/2012dzli/Maieutics, src/tinynn · Run records: scratch/h2, scratch/rabbithole, scratch/gseries-v2 · Paper shelf: arXiv:2502.05171, arXiv:2512.19428, arXiv:2312.00752, arXiv:2412.06769, arXiv:2301.13196</p>
   <p><b>Abstract.</b> In this work we investigate whether a small recurrent network can be taught genuine rule-like lookup — retrieving a bound value from an arbitrary position on demand — or whether it can only memorize and shortcut. We propose <b>staged hint fading</b> as a transmission mechanism: a frozen hint-trained teacher supervises a hint-free student while the supervision is graduated to zero. On a bench associative-recall task with fair-slot training, attention-based small nets look up reliably (0.78–0.84 flat across positions) while geometry-only and notebook variants sit near chance. Answer-only training at h48 never ignites (ignite ⇔ Eq. 3; 0/32 across four architectures, 95% CI 0.00–0.11; more steps memorize or heuristic-lock rather than teach). But a frozen hint-trained teacher can transmit the rule to a hint-free student through staged hint fading: 5/8 students ignite with a fast fade (95% Wilson CI 0.31–0.86), and a slower fade rescues 1 of 3 failures (95% CI 0.06–0.79). Chained tutor-to-student across five generations, 35/40 ignite (G1 8/8, G2 6/8, G3 7/8, G4 8/8, G5 6/8) with best students perfect in every generation — teaching compounds, not rots. Transmission is therefore possible but fragile, and failure modes differ by seed. Our contribution is a teachability result with pre-registered bars, plus a characterization of exactly where transmission breaks (severance-fragile collapse, memorize-lean, slow-rescuable). All effect sizes are regime-bound (h48, one task family, n ≤ 8 per condition); the scaling hypothesis and cross-family transfer are <span class="tbd">TBD</span>. Stated failure boundary: cold copying transmits nothing (0/9, 95% CI 0.00–0.33), no single fade schedule fits all seeds, and nothing is claimed beyond h48, one task family, and the schedules tested. This draft reports the first step (transmission) plus its chaining (G1→G5, §8.1); its declared endpoint is §8 — a nursery that, given a topic, creates from scratch a full model that learns it. Everything past G3 is roadmap with pre-registered bars, not results.</p>
   <p class="draft-banner"><b>How to read this draft:</b> claims tagged <span class="tag m">MEASURED</span> have a run record behind them (quoted exactly); claims tagged <span class="tag t">TBD</span> are unwritten, unrun, or open. Section 6 lists where we misstepped on the way here. Nothing here is submitted anywhere; section numbers will move. <button class="dict-link" data-dict="d-livingdoc"><b>Living document:</b></button> after every experiment wave the draft is updated in a fixed order — §4 numbers first, then §6 missteps, then §7 TBDs, then the clickable dictionary — so it never falls behind the lab again.</p>
+  <p><span id="dlCtnEl"></span> <span class="hidden-note">saves this lab as one HTML file, editable offline after download</span></p>
 </header>
 
 <section class="card">
@@ -207,7 +208,7 @@
     <li>OpenAI (2024). Learning to Reason with LLMs. OpenAI blog post (o1 announcement). <a href="https://openai.com/index/learning-to-reason-with-llms/" target="_blank" rel="noopener">openai.com</a>.</li>
     <li>Further related work (SSMs, looped transformers, continuous CoT): <span class="measured">MEASURED (§7 pass + References)</span>.</li>
   </ul>
-  <p class="hidden-note">What follows is the living bench — Appendix A–G. Everything above is computed down here.</p>
+  <p class="hidden-note">What follows is the living bench — Appendix A–H. Everything above is computed down here.</p>
 </section>
 
 <section class="card">
@@ -364,6 +365,7 @@
     <button id="t2TrainBtn">train tiny net</button>
     <button id="t2AdaptBtn" disabled>adapt to variant, 60 steps</button>
     <button id="t2SanityBtn">fresh-eyes check</button>
+    <button id="t2CopyBtn" title="Copy the current task config as a shareable ?task=&steps=… link suffix">copy run config</button>
     <span class="hidden-note" id="t2StatusEl">idle — nothing trained yet</span>
   </div>
   <div class="grid2">
@@ -375,6 +377,37 @@
   <div id="t2SanityEl" class="hidden-note" style="margin-top:8px">fresh eyes: press the button after a training report exists — a brand-new, context-free AI read of that report lands here (blunt, technical, ELI5 ignored).</div>
   <p class="hidden-note">Honest scope: pooled-MLP, running-state, single-head attention, or geometry/gist/query-head cores (task box). Curves are measured, not staged: if extra depth does not help on some task, the bars will say so.</p>
 <p><button class="dict-link" data-dict="d-eli5-labguide">ELI5: read this before pressing train</button></p>
+</section>
+
+<section class="card">
+  <h2>Appendix H · Stolen tools (credit — infrastructure, not evidence)</h2>
+  <p>Nothing below is a logic source — the argument stands on the References above. These are borrowed workshop tools (Track A steals, full record in <span class="mono">src/steal/registry.md</span>): what each is, why it was taken, and where it came from. The grammar four are live in this sentence: an honest experiment in sharing geese, conclusively titled [titleCase("stolen tools")]. (a-an and be-verb stay import-only: their MutationObservers ping-pong forever when they share a parent — proven by frozen loads, see registry.)</p>
+  <ul>
+    <li><b>remember-plugin</b> — persists lab inputs across reloads via localStorage. Stolen for G1: every control on this page forgot its setting on refresh. <a href="https://perchance.org/remember-plugin" target="_blank" rel="noopener">perchance.org/remember-plugin</a></li>
+    <li><b>markdown-plugin</b> — renders markdown to HTML (vendored marked 0.5.0, no runtime network). Stolen for G2: paper-docs authoring without hand-writing HTML. <a href="https://perchance.org/markdown-plugin" target="_blank" rel="noopener">perchance.org/markdown-plugin</a></li>
+    <li><b>literal-plugin</b> — escapes square/curly brackets (plus optional HTML entities) so text containing them is not parsed as Perchance syntax. Stolen for G2: writing paper and prompt text with brackets in it. <a href="https://perchance.org/literal-plugin" target="_blank" rel="noopener">perchance.org/literal-plugin</a></li>
+    <li><b>download-button-plugin</b> — one-click anchor to the first-party downloadGenerator API. Stolen for G3: export this lab as a single editable-offline HTML file (the button in the header). <a href="https://perchance.org/download-button-plugin" target="_blank" rel="noopener">perchance.org/download-button-plugin</a></li>
+    <li><b>seeder-plugin</b> — seeded RNG overriding Math.random. Stolen for G4: replayable bench runs (imported; train.js integration spec'd in registry, not yet wired). <a href="https://perchance.org/seeder-plugin" target="_blank" rel="noopener">perchance.org/seeder-plugin</a></li>
+    <li><b>url-params-plugin</b> — one-line URL query parser. Stolen for G4: shareable configs — the lab applies ?task=&amp;steps=… on load (late, so links win over remembered settings). <a href="https://perchance.org/url-params-plugin" target="_blank" rel="noopener">perchance.org/url-params-plugin</a></li>
+    <li><b>copy-text-plugin</b> — clipboard copy. Stolen for G4: the "copy run config" button beside fresh-eyes check. <a href="https://perchance.org/copy-text-plugin" target="_blank" rel="noopener">perchance.org/copy-text-plugin</a></li>
+    <li><b>select-until-plugin</b> — keeps drawing until an item meets a predicate. Stolen for G4: bench sampling (imported; sampling-loop integration spec'd, not yet wired). <a href="https://perchance.org/select-until-plugin" target="_blank" rel="noopener">perchance.org/select-until-plugin</a></li>
+    <li><b>random-select-plugin</b> — odds-based choice returning list references. Stolen for G4: bench sampling (imported; integration spec'd, not yet wired). <a href="https://perchance.org/random-select-plugin" target="_blank" rel="noopener">perchance.org/random-select-plugin</a></li>
+    <li><b>fixed-until-reload-plugin</b> — draws once, holds still until refresh. Stolen for G4: experiment locking (imported; flow integration spec'd, not yet wired). <a href="https://perchance.org/fixed-until-reload-plugin" target="_blank" rel="noopener">perchance.org/fixed-until-reload-plugin</a></li>
+    <li><b>lockable-list-plugin + locker-plugin</b> — lock one result while re-rolling the rest. Stolen for G4: experiment locking (imported; flow integration spec'd, not yet wired). <a href="https://perchance.org/lockable-list-plugin" target="_blank" rel="noopener">lockable-list</a> · <a href="https://perchance.org/locker-plugin" target="_blank" rel="noopener">locker</a></li>
+    <li><b>be- / plural- / a-an- / title-case-plugins</b> — grammar butlers (is-are agreement, irregular plurals via vendored pluralize, a-vs-an, Title Case). Stolen for G5: paper prose — this appendix uses all four on itself. <a href="https://perchance.org/be-plugin" target="_blank" rel="noopener">be</a> · <a href="https://perchance.org/plural-plugin" target="_blank" rel="noopener">plural</a> · <a href="https://perchance.org/a-an-plugin" target="_blank" rel="noopener">a-an</a> · <a href="https://perchance.org/title-case-plugin" target="_blank" rel="noopener">title-case</a></li>
+    <li><b>print-button-plugin</b> — window.print plus print CSS. Stolen for G5: paper-friendly printing (header button). <a href="https://perchance.org/print-button-plugin" target="_blank" rel="noopener">perchance.org/print-button-plugin</a></li>
+    <li><b>fullscreen-button-plugin</b> — fullscreen toggle. Stolen for G5: demos (header button). <a href="https://perchance.org/fullscreen-button-plugin" target="_blank" rel="noopener">perchance.org/fullscreen-button-plugin</a></li>
+    <li><b>skill-creator guide</b> — SKILL.md authoring guide (Apache-2.0, vendored to <span class="mono">src/tools/skill-creator/</span>). Stolen as AI instructions: hardens our own P1 steal format. Source: <a href="https://github.com/skillcreatorai/Awesome-Agent-Skills" target="_blank" rel="noopener">skillcreatorai/Awesome-Agent-Skills</a></li>
+    <li><b>eval-harness / project-evals / benchmark</b> — eval discipline for G4 (all in <span class="mono">src/tools/</span>): pass/fail criteria + pass@k before bench changes, grader-file conventions, repeatable baselines. Sources: <a href="https://github.com/affaan-m/everything-claude-code" target="_blank" rel="noopener">eval-harness</a> · <a href="https://skillmd.com" target="_blank" rel="noopener">skillmd: project-evals, benchmark</a></li>
+    <li><b>paper-compile / latex-workflow (MIT) / pdf-processing</b> — paper pipeline for G5: LaTeX-to-PDF compile loop, IMRaD + bib + arXiv prep, PDF extract/OCR. Source: <a href="https://skillmd.com" target="_blank" rel="noopener">skillmd</a></li>
+    <li><b>research (multi-source sweep)</b> — papers.md rabbithole procedure: GitHub/HN/Reddit/arXiv/Semantic Scholar in one sweep. Source: <a href="https://skillmd.com" target="_blank" rel="noopener">skillmd: athola/research</a></li>
+    <li><b>webapp-testing / playwright-expert (MIT)</b> — lab test harness: reconnaissance-then-action page testing, robust E2E patterns. Sources: <a href="https://github.com/anthropics/skills" target="_blank" rel="noopener">anthropics/skills</a> · <a href="https://skillmd.com" target="_blank" rel="noopener">skillmd</a></li>
+    <li><b>dataset-datasheet / jupyter-notebook</b> — G4 repro discipline: document what eval data is and when not to use it; clean notebook conventions. Source: <a href="https://skillmd.com" target="_blank" rel="noopener">skillmd</a></li>
+    <li><b>context-compression</b> — session hygiene, G1-adjacent: structured compression for long runs (also how this project's own notes survive). Source: <a href="https://skillmd.com" target="_blank" rel="noopener">skillmd</a></li>
+    <li><b>tutor-skills / beautiful-prose</b> — teaching + prose: docs turned into quizzed StudyVaults; style contract against AI tics. Sources: <a href="https://github.com/RoundTable02/tutor-skills" target="_blank" rel="noopener">tutor-skills</a> · <a href="https://github.com/SHADOWPR0/beautiful_prose" target="_blank" rel="noopener">beautiful_prose</a></li>
+    <li><b>taste-skill</b> — G5 demo polish: anti-slop frontend direction. Source: <a href="https://skillmd.com" target="_blank" rel="noopener">skillmd</a></li>
+    <li><b>pytorch-training / sparse-autoencoder-training (MIT) / pyvene-notes (MIT)</b> — B-DEPENDENT agent-side reading: training debug checklist, SAELens interpretability, causal interventions. Text usable now; GPU runs gated on Track B. Source: <a href="https://skillmd.com" target="_blank" rel="noopener">skillmd</a></li>
+  </ul>
 </section>
 </div>
 
@@ -1012,5 +1045,57 @@ window.TeachingLab.dict = {
       sanityEl.textContent = "fresh eyes: unavailable — " + (e && e.message ? e.message : e);
     } finally { sanityBtn.disabled = false; }
   };
+
+  // ---------- G4: shareable run configs (url-params + copy-text) ----------
+  // Copy builds a ?task=&steps=… suffix anyone can open; apply runs late so a
+  // shared link wins over remember-plugin's restore (which fires ~200ms in).
+  const copyBtn = document.getElementById("t2CopyBtn");
+  function currentCfg() {
+    const v = (id) => { const el = document.getElementById(id); return el ? el.value : ""; };
+    return "task=" + encodeURIComponent(v("t2TaskEl")) + "&depth=" + encodeURIComponent(v("t2DepthEl")) +
+      "&steps=" + encodeURIComponent(v("t2StepsEl")) + "&settle=" + encodeURIComponent(v("t2SettleEl")) +
+      "&hw=" + encodeURIComponent(v("t2HwEl")) + "&pcgrad=" + (document.getElementById("t2PcgradEl").checked ? "1" : "0");
+  }
+  if (copyBtn) copyBtn.onclick = () => {
+    try {
+      root.copyText("?" + currentCfg());
+      sanityEl.textContent = "run config copied — open this page with ?" + currentCfg() + " to reproduce it.";
+    } catch (e) { sanityEl.textContent = "copy unavailable — " + (e && e.message ? e.message : e); }
+  };
+  setTimeout(() => {
+    try {
+      const p = (typeof root !== "undefined" && root.urlParams) ? root.urlParams : {};
+      const keys = Object.keys(p);
+      if (!keys.length) return;
+      const set = (id, key) => {
+        if (p[key] === undefined) return;
+        const el = document.getElementById(id);
+        if (!el) return;
+        const vals = [...el.options].map(o => o.value);
+        if (!vals.includes(p[key])) return;
+        el.value = p[key];
+        el.dispatchEvent(new Event("change", { bubbles: true }));
+      };
+      set("t2TaskEl", "task"); set("t2DepthEl", "depth"); set("t2StepsEl", "steps");
+      set("t2SettleEl", "settle"); set("t2HwEl", "hw");
+      if (p.pcgrad !== undefined) {
+        const el = document.getElementById("t2PcgradEl");
+        el.checked = p.pcgrad === "1";
+        el.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+      document.getElementById("t2StatusEl").textContent = "shared config applied from URL — press train to reproduce.";
+    } catch (e) {}
+  }, 1500);
+})();
+</script>
+<!-- G1 pilot: persist all lab inputs across reloads (remember-plugin @inputs mode) -->
+<span hidden>[remember(root, "@inputs")]</span>
+<script>
+// ---------- G3: one-click export (download-button-plugin) ----------
+(function(){
+  try {
+    const ctn = document.getElementById("dlCtnEl");
+    if (ctn && typeof root !== "undefined" && root.downloadBtn) ctn.innerHTML = root.downloadBtn("Download this lab", "") + " " + root.printButton + " " + root.fullScreen("Fullscreen", "Exit fullscreen", "");
+  } catch (e) {}
 })();
 </script>

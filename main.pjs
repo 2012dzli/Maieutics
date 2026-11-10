@@ -2,6 +2,24 @@
 // Paper draft v0.1 in index.html (bench: staged hint fading distills addressable lookup).
 
 generateText = {import:ai-text-plugin}
+remember = {import:remember-plugin}
+markdown = {import:markdown-plugin}
+literal = {import:literal-plugin}
+downloadBtn = {import:download-button-plugin}
+urlParams = {import:url-params-plugin}
+copyText = {import:copy-text-plugin}
+printButton = {import:print-button-plugin}
+fullScreen = {import:fullscreen-button-plugin}
+aAn = {import:a-an-plugin}
+beVerb = {import:be-plugin}
+pluralize = {import:plural-plugin}
+titleCase = {import:title-case-plugin}
+seeder = {import:seeder-plugin}
+selectUntil = {import:select-until-plugin}
+randomSelect = {import:random-select-plugin}
+fixedReload = {import:fixed-until-reload-plugin}
+lockable = {import:lockable-list-plugin}
+locker = {import:locker-plugin}
 
 title
   Teaching Small Models to Learn

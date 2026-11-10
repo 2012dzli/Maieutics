@@ -37,8 +37,15 @@ User says one of:
 
 - `run rabbithole: <root question>` — no total budget; throttled stream by
   default. Optional `[cap: N waves]` only if the user sets a hard cap.
-- `continue rabbithole` (resume latest state)
+- `continue rabbithole` (resume latest state — valid but NEVER required: standing
+  permission to resume is assumed YES, user-set 2026-11-10, so never ask for it
+  and never wait for it; awaiting a continue message is itself a permission gate)
 - `stop` / `pause rabbithole` (stop signal — honored on next turn)
+- per-turn budget (user-set 2026-11-10): 10,000~20,000 waves per turn, i.e.
+  effectively unbounded — the ONLY stop reasons mid-run are the user's manual
+  stop, a genuine block, or an explicit cap. Soft rationing (1-2 waves then
+  report) is BANNED; a turn ends when the work is done or blocked, never to
+  force a check-in.
 
 No root question given = default to the standing topic in
 `scratch/CURRENT_TASK.md` (at writing: the project wall — capacity vs.
@@ -72,8 +79,16 @@ reconcile state with `scratch/CURRENT_TASK.md` before continuing.
 5. Synthesize: per-branch verdict (useful / dead end + why); failed search =
    inconclusive (retry once, varied); clean empty search = negative evidence.
 6. Update `state.json`, `log.md`, and `scratch/CURRENT_TASK.md` checkpoint.
-7. pause/report: short status, then continue while the turn is active.
-   pause/report is NON-blocking — never a permission gate.
+7. Queue rule (user-set 2026-11-10): every finished wave MUST open at least 1
+   new wave (append to `branches.open`). The queue never empties by finishing
+   work — it empties only at run end (user stop, genuine block, explicit cap,
+   or proven-dry: a wave that genuinely cannot spawn a follow-up, logged with
+   why). If `branches.open` is ever empty outside run end, that is a bug.
+8. pause/report: short status, then continue while the turn is active.
+   pause/report is NON-blocking — never a permission gate. NEVER ask the user
+   for `continue`: standing permission to resume is assumed YES (user-set
+   2026-11-10); ending a turn with "say continue" as a precondition for more
+   work is itself a permission gate.
 
 Throttled stream, no total budget: pace is the control. Concretely, one wave =
 at most 2 scouts at 100 words each + at most 2 primary fetches. A pause =

@@ -165,6 +165,15 @@ better. This is the method that took the gameplan v1→v5, and the one
 to use on any load-bearing document (the paper draft's upcoming
 battery is steps 1–2 of this loop).
 
+**Battery definition (user-set 2026-11-10, generalized — do NOT memorize the
+number): a battery is N fresh reviewers on EACH artifact/list, then adjudicate
+every reply (accept / reject / partial), then patch once. That whole thing is
+ONE round. Then repeat the entire battery on the new version until the stop
+rule fires (two barren rounds in a row, or unanimous steelman). N defaults to
+10; scale it to the artifact and the stakes — small/settled artifacts earn
+fewer, load-bearing ones earn more. A single pass is never the battery; the
+repetition is the battery.**
+
 1. **Version and freeze.** Tag the artifact (v0.1, v0.2...) and hand
    reviewers the frozen copy. Never review a moving target — a finding
    against v0.1 must still be checkable after you patch.

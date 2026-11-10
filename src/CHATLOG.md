@@ -555,3 +555,92 @@ never "feels faster" — wall time, accuracy, loss, token counts.
 - Found stale: CURRENT_TASK still said G-series-complete (missed ELI5 rewire, skill overhaul, steal tracks); CHATLOG missed skill + steal entries; Phase 2.5 rewrite skipped its mandatory pre-edit snapshot; steal files sat in scratch (cache, not storage).
 - Fixed: CURRENT_TASK rewritten to now; CHATLOG entries added (ELI5 rewire earlier this session + these two); post-hoc snapshot scratch/gameplan-snapshots/2026-11-10-pre-steal-phase25.md (provenance labeled: in-context exact read, not recollection); steal files byte-verified identical then moved to src/steal/, scratch originals deleted, gameplan pointer updated.
 - Blob-compare vs repo tip 785978e: exactly 4 files differ (index.html, CHATLOG.md, README.md, rabbithole/SKILL.md) + 4 new (src/steal/*). UNPUSHED, needs fresh user PAT. ELI5-restore provenance (scratch/eli5-orig.html + boxes/context files) intentionally left in scratch as throwaway.
+
+## 2026-11-10 — PUSHED d6a0d20 (parent 785978e, user PAT)
+- 8 files via git-blobs API: index.html (ELI5 rewire), CHATLOG.md, README.md (Phase 2.5 pointer), rabbithole/SKILL.md (shotgun overhaul), src/steal/* ×4 new. Self-catch: first attempt 422'd (read r.sha instead of r.j.sha, SHAs dropped); recreated fixed. Verified via ref check (match). Repo clean.
+
+## 2026-11-10 — Fresh-eyes battery on the steal tracks (user: clarity rounds till sure + 5+ critique rounds)
+- Premise v1→v3 (scratch/fresh-eyes-steal-v1..v3.md). Clarity R1: 3/3 restated correctly; 4 ambiguity clusters (consult-coins, moves-a-number, beats-a-laptop, USED/SKIPPED location) → v2 glossary patch. Clarity R2: 3/3 correct again; residue = design work that IS the tracks + 3 refinements (relative baseline, noise-bar, v0.14 = v0.13 extended) → v3. Clarity declared certain (6/6 match).
+- C1 Track A: 3 reviewers → A3b portability filter (Logic/API/Framework, 2/3 same finding merged), A5 split bar (Performance/Utility). C2 Track B: 3 → B2b heartbeat probe, B3 circuit breaker (unanimous volatility convergence). C3 Track C: 3 → C3 conflict table, C5 USED-CONFLICT + novelty delta (unanimous novelty-risk convergence). Reviewer error logged: C3-R2 re-asked v3-glossary questions it didn't read.
+- C4 cross-track: 3/3 unanimous A4→B3 dependency (no API port before router interface) + regression check, B4 smoke-first, gameplan collision rule. C5 red-team: discipline assignment half-scrambled (2 systems voices) but usable → 6 patches (p99 tail latency, ToS lines, A4 pilot kill rule, dependency-light Logic, drift-not-accuracy conflict table). ML-skeptic "vanity" PARTIAL: tracks serve nursery/lab infra, but pilot rule adopted.
+- C6 steelman: 3/3 HOLD with priced residuals (port overhead/dev-hours; 429 waste/recalibration; diversity-metric compute). STOP per rule.
+- Score: 8 rounds, 24 reviewers, ~16 adopted changes, 1 reviewer error. Results: scratch/fresh-eyes-steal-*.md (8 files). Track files carry every patch with its round tag.
+
+## 2026-11-10 — Steal-track corrections + battery definition (user, 4 notes)
+- "Tiny workshop" = bench fit (h48/CPU/thousands of params), NOT git/Perchance limits. Filter sorts workshop-fittable from factory-grade.
+- Track B reframed parallel POOL (user: daisy-chain implied series): slow sources side-by-side, tail shed not waited on, banned accounts rotate out → next source in, coins account for all. Scaffolding thesis + B3 rewritten.
+- "Already invented" answered: no reviewer NAMED a precursor (risk flagged, correctly — that is their job); USED-CONFLICT machinery turns a find into a gift (copy/expand/cite same wave). Adjacent art named: AutoML/NAS (architectures not teaching), one-shot distillation (not iterated), iterated learning (collapse not promotion). C1 survey settles factually.
+- Battery definition now explicit in fresh-eyes skill: 10 reviewers per artifact/list + adjudicate + patch = ONE round; repeat whole battery per version until stop rule. Note: the finished steal battery ran 3-wide per round (pre-definition); it still closed 3/3 steelman HOLD, so it stands — future batteries run 10-wide.
+
+## 2026-11-10 — Battery N generalized + two-workshops fit spec (user)
+- Fresh-eyes battery rule generalized per user (don't memorize the number): N reviewers/artifact, default 10, scaled to artifact size + stakes; repetition-till-stop-rule is the battery, unchanged.
+- "Tiny workshop" deepened into THE TWO WORKSHOPS (registry.md): W1 = shipped generator (visitor browser, CPU, no secrets, no build, esm.sh OK); W2 = agent tooling (worker + fs/tools/esm.sh, may be heavy, still secret-free); W3 = the assumed server/GPU/Python world we don't have. A3b is now a 6-line fit-check checklist (workshop, secrets, compute, deps, net, weight) with verdict mapping.
+
+## 2026-11-10 — Refinement battery 2 on steal tracks (user: 5+ rounds, combined rounds, stop when comfortable)
+- R1 Track A (6): A0 gap-driven rule, runtime-target blocking gate + 100KB weight cap, frozen reference bench set, graded pilot. Reviewer errors: "moves-a-number paradox" (A5 Utility already answers), coin/B3 questions (stated design output).
+- R2 Track B (6): polite two-tier heartbeat (probe must not BE the ban), per-provider coin price lists (no universal rate), router holds balances, cold-start routing, one-ordinary-account-per-provider ToS, quantified ≥2× bar. Mostly clarity-fallback; the 5/6 coin-rate convergence still forced the explicit pricing design.
+- R3 combined (6): graded pilot budgets, port-slayer + hard-exam pilot, calibrated capped hedge, floor + cold-start exempt breaker, delta template with goal-impact/so-what, per-CONFLICT fresh-eyes check, prediction-first conflict table (embedding/TTR/entropy). Rejects: triage matrix (A0 covers), exit-to-paid (no budget; floor is the exit), shadow-heartbeat (already the hedge).
+- R4 combined (6): rollback + port-tax + shim-counting, A0 WONTFIX fallback, throughput pricing + heartbeat refresh + token ceilings, data hygiene, all-in B5 accounting, synthesis taxonomy + bench-result filing.
+- R5 combined (6): hidden-API audit, floor triggers + global hard timeout, cheap accountant, data-in derate column, skip taxonomy + 3-of-a-kind rule. A 6/6 SOLID, C 5/6, B 1 SOLID + 5 HOLD (complexity) → R6 kill-round on B.
+- R6 kill-B (6): 6/6 SIMPLIFY — killed the runtime coin accountant (unanimous: costs more than the calls). Static priority queue + liveness heartbeat + breaker + floor; coins demoted to post-mortem budget unit; B4 decider test first.
+- R7 steelman (6): 4 HOLD + 2 BREAK, both cold-start (hedges don't save a 10s boot). Patched: warm-sentry keep-alives, COLD-ONLY sources take long tasks only, short-task exclusion rule.
+- R8 verify (6): 6/6 HOLD, BREAK closed (residuals: thundering-herd watch, sentry-vs-429 tuning, stale-measurement jitter). STOP per rule — comfortable.
+- Score: 8 rounds, 48 reviewers, all adoptions tagged in src/steal/*.md. Results: scratch/fresh-eyes-steal-v4-*.md (8 files) + v4 premise. Battery rule held: N=6 judged right for short docs (not the default 10).
+- UNPUSHED: registry.md, scaffolding.md, papers.md, CHATLOG.md, fresh-eyes SKILL.md (battery def), README.md (pointer edit) — needs fresh user PAT.
+
+## 2026-11-10 — Rabbithole skill: standing permission to resume (user) + Track A waves 1-10
+- Skill rule added (user: asking for `continue` is itself a permission gate — assume YES, never ask, never wait): Command section + wave-loop step 7 both carry it now. CURRENT_TASK active-slug line reworded (no "resumes on your continue" framing).
+- Track A rabbithole RUNNING (slug steal-track-a, state scratch/rabbithole/steal-track-a/): waves 1-3 census + spec verify (folder+SKILL.md, name+description min — our steal format matches by construction); wave 4 source-reads remember-plugin (V7 FIT-W1, pure localStorage) + download-button (V8 FIT-W1); wave 5 sandbox s01-remember STATIC PASS (15486B, zero-dep, no-net); waves 6-8 marketplace probe (skillmd MINABLE via sitemap+API, agentskill payload PROVEN, 3 shells dead via fetch); wave 9 safety-review model adopted (capability flags); wave 10 markdown-plugin V17 FIT-W1 (37KB, main-thread-only) + format guide (frontmatter name/description/license). Proposals: P1 frontmatter in future steal files (user nod needed); gaps G1-G3 still draft (no port before user confirms); FIT = port-eligible, STOLEN gated on gaps + A4 pilot.
+- UNPUSHED: + rabbithole SKILL.md (standing rule), registry.md (census + reads), CHATLOG.md (this entry) — needs fresh user PAT.
+
+## 2026-11-10 — Pre-fetch battery (user: second opinion before fetch, my choice, as many as needed)
+- Ran 22 reviewers: Track A shortlist 8x, Track B router 8x, Track C plan 6x. Results: scratch/fresh-eyes-steal-prefetch-A-8x-results.md, -B-8x-results.md, -C-6x-results.md.
+- A (8/8): DROP docs-plugin (redundant + overweight + CDN), sheets stays API-BLOCKED, KEEP remember + markdown + literal (+ download trivial). Pre-fetch checks adopted: hidden-API grep, 10KB/16ms main-thread test, combined <=100KB.
+- B (8/8 fragile): cold-start cascade / zombie-warm / hedge->429 unanimous. Patches: zombie = kill not wait, heartbeat polite (no 50-burst where banned), 15%-overhead falsifier on 100-task batch, decider test before router. No build until B1/B2 numbers pinned.
+- C (6/6): order C1->C2->C3->C4 holds (2/6 wanted C4 first — rejected, mitigated with one-line old-2.5 map at C1). Primary falsifier adopted: TTR/entropy/PATH-diversity falling while accuracy holds = collapse. Priors queued into C4: MAML, STaR, RRM, Kaplan tiny-net, catastrophic forgetting. Shuffle-teacher + cross-teacher + novel-path tests adopted.
+- UNPUSHED: 3 results files (scratch, cache) + src/steal/*.md patches TBD + CHATLOG (this entry) — needs fresh user PAT. Next: fetch phase A1/B1+B2/C1+C3 still gated on user go.
+
+## 2026-11-10 — A-list finished (user: finish A list, skills first)
+- Geared up: perchance-platform skill loaded + websearch recipe confirmed.
+- Fetched literal-plugin (454B pure regex, docs-only HTML). Hidden-API audit KEEP set: literal CLEAN, remember CLEAN (localStorage only), markdown CLEAN-runtime (vendored marked, Main-Thread-only flag), download-button CLEAN (anchor only).
+- Registry close-out written: KEEP remember/markdown/literal/download, DROP docs (SKIPPED-redundant), BLOCK sheets (API/B3). A1/A2/A3b DONE for this scope; A0 gaps + A4 ports still gated (G1-G3 confirm, P1 nod).
+- UNPUSHED: registry.md + CHATLOG (this entry) — needs fresh user PAT.
+
+## 2026-11-10 — A0/G1-G3/P1/pilot locked (user delegated: my shopping list, my call)
+- G1 = reload amnesia -> remember. G2 = paper/docs pain -> markdown + literal. G3 = export clunk -> download-button. P1 frontmatter approved (folder + SKILL.md name/description/license).
+- Pilot = G1 remember: Utility bar = persists across reload + guards pass + no bench regression + <=100KB. Fail = pause Track A per pilot rule. Recorded in registry A0 (tracked, pushes to GitLab with PAT).
+- UNPUSHED: registry.md + CURRENT_TASK + CHATLOG — needs fresh user PAT.
+
+## 2026-11-10 — A4 ports LANDED (user: bring them all in; pilot G1 first per rule)
+- Pilot G1 remember alone: refresh clean, quickSelfTest learned:true, quickAttnTest ok:true, kPick 2 + depth 32 survive full reload. Bar MET, no pause.
+- G2/G3 same batch: markdown + literal + downloadBtn imports, hero #dlCtnEl export button (href downloadGenerator?generatorName=teaching-small-models-to-learn, rendered 153x22px), md/lit verified callable. Guards identical post-batch, persistence intact, console + perchanceErrors clean.
+- STOLEN lines in registry (with reverts + guard snapshots). Port-tax: 0 glue lines (imports only + 12-line wiring script).
+- UNPUSHED: main.pjs + index.html + registry.md + CHATLOG + CURRENT_TASK — needs fresh user PAT.
+
+## 2026-11-10 — Appendix H: stolen-tools credit (user: blurb + why + links, tools not logic)
+- New section.card after Appendix G: 4 blurbs (remember/markdown/literal/download-button — what + why/G1-G3 + perchance.org links), header states tools-are-infrastructure-not-evidence, logic stays in References, full record pointer to src/steal/registry.md. A–G mentions -> A–H (directive + bench note).
+- Verified live: 17 sections, Appendix H last with 4 correct links, dict intact, refresh clean.
+- UNPUSHED: index.html + CHATLOG + CURRENT_TASK — needs fresh user PAT.
+
+## 2026-11-10 — Wave 12 full-pull (user: pull everything we'd want for Track A)
+- 73 fetch_generator calls, audit (sizes + net/DOM flags) in scratch/steal-audit.json. Almost all net hits = docs links; real runtime-net only: bug-report/tldraw/font/unsplash/soundcloud/stats/sheets/dynamic-import(first-party).
+- text/table/map/sound = MISSING (empty fetch, scout was wrong); custom-font-importer correct name is code-empty.
+- Verdicts grouped in registry: WANT-G4 (seeder, url-params, copy-text, select-until, random-select, fixed-until-reload, lockable, locker), WANT-G5 (be/plural/a-an/title-case, print, fullscreen; HOLD stats/tts/dynamic-import), SKIP weight/nogap/external.
+- G4/G5 named (delegation), ports NOT started. UNPUSHED: registry.md + CHATLOG + CURRENT_TASK — needs fresh user PAT.
+
+## 2026-11-10 — Wave 13 skill-dirs (user: and the directories too)
+- VoltAgent zip: 5 files / 0 SKILL.md — link-index only. Shopping-list hits all keyed (serpapi/firecrawl/brave/browserbase search; HF datasets/eval/jobs/trainer; datadog eval) = API/Framework, B/C territory. Track A yield: zero.
+- skillcreatorai zip: 363 files / 27 SKILL.md, read 5 closest — sales/productivity. Yield: skill-creator (SKILL.md authoring guide, META-WANT for P1 format). webapp-testing/mcp-builder = W3, SKIP. Index: scratch/skill-dirs-pull.json.
+- UNPUSHED: registry.md + CHATLOG + CURRENT_TASK — needs fresh user PAT.
+
+## 2026-11-10 — Wave 14 G4/G5 tranche (user: pull everything + Appendix H)
+- +14 imports, all verified; wired print/fullscreen/copy-config/URL-apply (assocR/600/short round-trip OK, controls reset after). Import-only: seeder/sampling/lockables (spec'd, needs design) + aAn/beVerb (HAZARD: shared-parent MutationObserver ping-pong froze two loads; never co-locate; pluralize/titleCase pure-safe).
+- skill-creator vendored Apache-2.0 to src/tools/skill-creator/. Appendix H: 15 blurbs, dogfoods pluralize/titleCase live.
+- Guards identical pre/post, persistence intact, console clean. UNPUSHED: main.pjs + index.html + registry.md + src/tools/skill-creator/ + CHATLOG + CURRENT_TASK — needs fresh user PAT.
+
+## 2026-11-10 — Waves 15-17 marketplaces to pull (user: go inside, wishlist, second-check, push back, pull)
+- Wave 15 sweep: fetched awesomeskills.dev (172KB JS shell, 10 slugs), skillmd.com (307KB, REAL catalog, /api/search?q= works), awesomeskill.ai (683KB shell, 54 slugs), agentskill.sh (487KB, search BROKEN = openclaw monoculture, SKIP), joohw README (49KB, 247 entries/40+ cats, agent-skill.co best for official skills). Wishlist 17 Tier-1 in scratch/steal/mkt-wishlist.json.
+- Wave 16 second check: v1 premise frozen + 3x unarmed fresh-eyes (results scratch/fresh-eyes-marketplace-v1-3x-results.md). Unanimous: CUT Python-family runtime (Framework, no Python/GPU in W1/W2), playwright-in-worker impossible as runtime (kept 2 as page_eval procedures), dedupe paper 7->2 / eval 7->2 / pdf 4->1. Final 14 in scratch/steal/mkt-wishlist-final.json.
+- Wave 16b pushback ruling (user deferred override to me): PARTIAL accept. Track B is all-CLAIM (B1-B5 unchecked) and free tiers are hostile to long training loops, so shipped-runtime cut STANDS; but the cut mixed runtime with readable text (pytorch-training verified pure-md via skillmd API), so instruction slice re-admitted as B-DEPENDENT agent-side (GPU runs gated on B4+B5). Nemo-RL stays fully cut.
+- Wave 17 pull: second-checked keyargo/search = SKIP-redundant (own websearch skill already covers DDG recipe; body is Custodian-wrapped = Framework). Fetched 20 bodies via skillmd API + 2 github raws. Flag audit: pdf "secret" = sandbox guidance (benign); HF bearer = gated/private only (viewer still API-class/caution, DEFERRED post-B3); transformers-js full but NO named gap (DEFERRED). STOLEN x18 to src/tools/*/SKILL.md with P1 frontmatter + provenance (eval-harness, project-evals, benchmark, paper-compile, latex-workflow/MIT, pdf-processing, research sweep, playwright-expert/MIT, webapp-testing, dataset-datasheet, jupyter-notebook, context-compression, tutor-skills, beautiful-prose/sickn33, taste-skill, B-dependent pytorch-training + sparse-autoencoder/MIT + pyvene-notes/MIT). Appendix H 15->24 blurbs. Guards post-refresh: quickSelfTest learned:true + quickAttnTest ok:true, console clean.
+- PUSHED (user PAT, blobs API, parent d6a0d20): 27 files (8 modified + 19 new). Repo-meta (.gitignore, Dockerfile, root README, k8s/) preserved from tip.
