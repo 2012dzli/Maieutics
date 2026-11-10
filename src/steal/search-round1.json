@@ -1,0 +1,278 @@
+{
+ "t1": [
+  {
+   "query": "perchance.org plugin directory ai-text-plugin text-to-image server-plugin kv-plugin",
+   "results": [
+    {
+     "title": "Text to Image Plugin - Perchance",
+     "url": "https://perchance.org/text-to-image-plugin",
+     "snippet": "Generate images from text using Perchance&#x27;s free, unlimited, and watermark-free plugin without sign-up."
+    },
+    {
+     "title": "Perchance Plugins ― Perchance",
+     "url": "https://perchance.org/plugins",
+     "snippet": "Explore Perchance plugins to enhance your generators with additional features and functionality, making your creative projects more dynamic and engaging."
+    },
+    {
+     "title": "Text-to-image-plugin - Perchance.org Wiki | Fandom",
+     "url": "https://perchance.fandom.com/wiki/Text-to-image-plugin",
+     "snippet": "To use this plugin, you&#x27;ll first need to import it by adding this line to your lists editor: image = {import:text-to-image-plugin} hhf And now try putting this in your lists editor: character a {mech|demon|cyberpunk} {warrior|minion|samurai|shemale} place soviet russia a small village a mountai"
+    },
+    {
+     "title": "Perchance text-to-image plugin - Factually",
+     "url": "https://factually.co/topics/perchance-text-to-image-plugin",
+     "snippet": "Perchance&#x27;s text-to-image plugin is a community-built Perchance module that stitches user prompts to external image-generation APIs (mostly Stable Diffusion variants), letting Perchance generator page..."
+    },
+    {
+     "title": "perchance-project/plugins.md at main - GitHub",
+     "url": "https://github.com/Mosberg/perchance-project/blob/main/plugins.md",
+     "snippet": "text-to-image-plugin: generate an image from a text description using AI ai-text-plugin: generate text (stories, poems, etc) based on an instruction comments-plugin: allows you to embed a little comments/feedback section in your generator docs-plugin: easily create multi-page docs using markdown cre"
+    },
+    {
+     "title": "Plugins | Perchance.org Wiki | Fandom",
+     "url": "https://perchance.fandom.com/wiki/Plugins",
+     "snippet": "The commentsOptions is a optional input to the plugin, that specifies the plugin&#x27;s options. Adding comments to the HTML Here&#x27;s what it should show. This procedure might not work for other plugins so be sure to read the documentation of the plugin on how to use it. For other questions, you "
+    },
+    {
+     "title": "Text-to-image plugin now has a &quot;gallery&quot; that your users can ... - Reddit",
+     "url": "https://www.reddit.com/r/perchance/comments/yhla1y/texttoimage_plugin_now_has_a_gallery_that_your/",
+     "snippet": "The public gallery can also be accessed via the button that appears at the bottom of a generated image when you hover your mouse over it (which is also where users can choose to submit images to the gallery)."
+    },
+    {
+     "title": "Perchance AI Image Generator &amp; AI Video Maker",
+     "url": "https://perchanceai.io/",
+     "snippet": "Create AI images from text with the Perchance image generator, then animate them into short videos. Perchance AI runs in your browser at perchanceai.io."
+    }
+   ]
+  },
+  {
+   "query": "AI agent skills collection awesome Claude agent skills markdown tools directory",
+   "results": [
+    {
+     "title": "Awesome Agent Skills - GitHub",
+     "url": "https://github.com/skillcreatorai/Awesome-Agent-Skills",
+     "snippet": "A curated list of awesome Claude Skills, resources, and tools for customizing Claude AI workflows - skillcreatorai/Awesome-Agent-Skills"
+    },
+    {
+     "title": "Awesome Agent Skills - GitHub",
+     "url": "https://github.com/VoltAgent/awesome-agent-skills",
+     "snippet": "A curated collection of 1000+ agent skills from official dev teams and the community, compatible with Claude Code, Codex, Gemini CLI, Cursor, and more. - VoltAgent/awesome-agent-skills"
+    },
+    {
+     "title": "Awesome Agent Skills — Claude Code, Codex &amp; Cursor Skills Directory",
+     "url": "https://www.awesomeskills.dev/en",
+     "snippet": "The definitive awesome list of Claude Code, Codex &amp; Cursor skills. 1,000+ SKILL.md packages for coding, automation &amp; research. One-command install."
+    },
+    {
+     "title": "SkillMD · The Open Library of AI Agent Skills",
+     "url": "https://skillmd.com/",
+     "snippet": "Discover, save, and install thousands of safety-reviewed Agent Skills for Claude Code, Cursor, Codex and 60+ more agents. Free to search, save and install."
+    },
+    {
+     "title": "Awesome Agent Skills — The AI Agent Skills Directory",
+     "url": "https://awesomeagentskills.dev/",
+     "snippet": "The unified, auto-updating directory of AI agent skills, MCP servers, and tools across every platform. 8,000+ entries from 10+ sources."
+    },
+    {
+     "title": "Awesome Skills - Agent Skills Marketplace for Claude, Codex &amp; ChatGPT",
+     "url": "https://awesomeskill.ai/",
+     "snippet": "Browse and download open-source agent skills for Claude Code, OpenAI Codex, and ChatGPT. Curated collection of SKILL.md files from GitHub. Find productivity skills, code generation prompts, MCP tools, and AI agent templates. The best Claude skills marketplace with 50,000+ skills."
+    },
+    {
+     "title": "Agent Skill Index — The Ultimate AI Agent Skills List &amp; Tutorials",
+     "url": "https://raw.githubusercontent.com/joohw/awesome-agent-skills/refs/heads/main/website/index.html",
+     "snippet": "Explore the most comprehensive list of AI agent skills, tools, and workflows. Master agentic AI with our curated skill list, tutorials, and quality standards for 2026."
+    },
+    {
+     "title": "AI Agent Skills Directory &amp; Marketplace — 44,000+ Skills for Claude ...",
+     "url": "https://agentskill.sh/",
+     "snippet": "Browse AI agent skills. The largest marketplace for Claude Code, Cursor, Copilot, Codex, Windsurf, Zed, and 20+ tools. One command to install."
+    }
+   ]
+  }
+ ],
+ "t2": [
+  {
+   "query": "free GPU notebook tier 2026 colab kaggle lightning free hours limits",
+   "results": [
+    {
+     "title": "Google Colab vs Kaggle Notebooks (2026): which free GPU is better?",
+     "url": "https://www.clusy.io/compare/colab-vs-kaggle",
+     "snippet": "Both give you free GPU notebooks. Kaggle offers a predictable weekly quota and the largest public dataset library; Colab offers a smoother ramp into paid compute. A 2026 comparison of quotas, sessions, and fit."
+    },
+    {
+     "title": "Google Colab GPU Usage Limits and Free Access | Hivenet",
+     "url": "https://www.hivenet.com/post/google-colaboratory-gpu-complete-guide-to-free-cloud-gpu-access-and-limitations",
+     "snippet": "Learn how Google Colab GPU access works in 2026, why limits and hardware vary, how compute units affect paid plans, and when to use dedicated compute."
+    },
+    {
+     "title": "Google Colab Free GPU Limits (2026): Hours, T4 &amp; Runtime",
+     "url": "https://joshthompson.co.uk/ai/google-colab-2026-guide-free-compute-automations-pro-tips/",
+     "snippet": "Google Colab has no fixed free GPU allowance. Learn about daily limits, T4 availability and runtime caps, with tested, restartable Python examples."
+    },
+    {
+     "title": "Free GPU Cloud Options (2026): Free Tier &amp; Credit Guide",
+     "url": "https://gpupicks.com/free-gpu-cloud/",
+     "snippet": "Compare free GPU cloud options from Colab, Kaggle, and Hugging Face, plus the Studio Lab transition, quotas, runtime limits, and when paid compute fits."
+    },
+    {
+     "title": "Free GPU for Students 2026: Colab, Kaggle and Credits",
+     "url": "https://www.getaiperks.com/en/ai/free-gpu-students",
+     "snippet": "Free GPU for students in 2026: Kaggle hours, Colab limits, Lightning credits and cloud credits up to $350,000 tracked by AI Perks."
+    },
+    {
+     "title": "6 Free Cloud GPUs: Models, Limits, Access Requirements",
+     "url": "https://aimultiple.com/free-cloud-gpu",
+     "snippet": "Kaggle&#x27;s weekly quota resets according to the account display. Colab does not publish a fixed reset schedule. ZeroGPU resets its daily quota 24 hours after first use. Paperspace ends free sessions within six hours, with new starts subject to capacity. Lightning warns users when credits run low "
+    },
+    {
+     "title": "How to Get a Free GPU for AI in 2026 | aifree.dev",
+     "url": "https://aifree.dev/learn/free-gpu-for-ai",
+     "snippet": "Free GPU options for AI: Kaggle&#x27;s 30 GPU hours a week, Hugging Face ZeroGPU&#x27;s daily minutes, and Google Colab&#x27;s free tier. Setup and limits."
+    },
+    {
+     "title": "Google Colab Free GPU Limits 2026: Hours, Compute Units, Pro - FreakyJolly",
+     "url": "https://freakyjolly.com/google-colab-free-gpu-limits/",
+     "snippet": "How much free GPU Colab gives in 2026, what 100 compute units buy on T4, L4, A100 and H100, Pro vs Pro+ vs Google AI plans, and free alternatives like Kaggle."
+    }
+   ]
+  },
+  {
+   "query": "free LLM API tier 2026 no credit card groq gemini openrouter free models",
+   "results": [
+    {
+     "title": "Free LLM API in 2026: 13 Options Ranked and Compared",
+     "url": "https://openrouter.ai/blog/tutorials/free-llm-apis-compared/",
+     "snippet": "Stop guessing which free LLM API survives past a side project. Here&#x27;s how OpenRouter, Groq, Gemini, and 10 more compare on limits, cost, and data use."
+    },
+    {
+     "title": "Free LLM APIs in 2026: Verified Rate Limits, No Credit Card",
+     "url": "https://opengpuradar.com/learn/top-free-llm-apis-2026",
+     "snippet": "For developers seeking zero-cost LLM access in 2026, Google AI Studio offers the most generous free tier at 15 RPM with 1M tokens/day on Gemini 2.5 Flash. Groq provides 30 RPM / 14,400 RPD on Llama 3.3 70B with no credit card required and 800 tokens/second latency."
+    },
+    {
+     "title": "Best Free LLM APIs in 2026: Developer&#x27;s Handbook",
+     "url": "https://free-llm.com/guides/best-free-llm-apis-2026",
+     "snippet": "A comprehensive guide to the best free LLM APIs in 2026. Compare Google Gemini, Groq, OpenRouter, and more. Learn about rate limits, models, and how to choose the right free tier."
+    },
+    {
+     "title": "Best Free LLM APIs in 2026 (no credit card) | FreeLLMAPI",
+     "url": "https://freellmapi.co/best-free-llm-apis-2026",
+     "snippet": "A ranked guide to the best genuinely free LLM APIs in 2026: real rate limits, which models you get, and which quietly need a credit card."
+    },
+    {
+     "title": "Free LLM API Keys &amp; Rate Limits 2026 | OpenGPU Radar",
+     "url": "https://opengpuradar.com/free-llm-apis",
+     "snippet": "Compare free LLM API tiers from Groq, Google Gemini, Cerebras, OpenRouter, and Hugging Face. Rate limits, RPM, tokens/sec, and context windows."
+    },
+    {
+     "title": "Free LLM API No Credit Card: 9 Providers That Work in 2026",
+     "url": "https://genai.club/blog/free-llm-api-no-credit-card-9-providers-that-work-in-2026",
+     "snippet": "Key Takeaway In 2026 the real split is not &#x27;paid versus free&#x27; but &#x27;expiring credit versus persistent no-card tier.&#x27; Cerebras, Groq, and Gemini AI Studio offer genuine indefinite free access at limits that can power real prototypes and small production workloads. The work is match"
+    },
+    {
+     "title": "Free LLM API Comparison 2026: Real Limits, Credits, and $0 Models",
+     "url": "https://blogs.novita.ai/free-llm-api-comparison-2026/",
+     "snippet": "Need a free LLM API in 2026? Compare real rate limits, daily caps, referral credits, and $0 model access across Novita AI, OpenRouter, Gemini, Groq, and more."
+    },
+    {
+     "title": "Best Free LLMs in 2026: No Credit Card Required - pristren.com",
+     "url": "https://pristren.com/blog/best-free-llm-2026/",
+     "snippet": "Discover genuinely free LLMs in 2026: Gemini Flash 1.5 (1.5M tokens/day), Groq Llama 3.3 (750 t/s), and Ollama local models. No credit card needed."
+    }
+   ]
+  }
+ ],
+ "t3": [
+  {
+   "query": "recurrent depth transformer test-time thinking survey Huginn looped",
+   "results": [
+    {
+     "title": "Latent Chain-of-Thought? Decoding the Depth-Recurrent Transformer",
+     "url": "https://arxiv.org/pdf/2507.02199v1",
+     "snippet": "In this paper, we investigated whether depth-recurrent transformers, exemplified by Huginn, exhibit latent chain-of-thought reasoning. We analyze the internal dynamics of the model on arithmetic tasks under conditions that suppress explicit reasoning."
+    },
+    {
+     "title": "Loop, Think, &amp; Generalize: Implicit Reasoning in Recurrent-Depth ...",
+     "url": "https://arxiv.org/pdf/2604.07822",
+     "snippet": "Several small-scale studies pretrain looped or recurrent-depth transformers on synthetic tasks to better understand their behavior in a controlled setting. Our work best aligns with such studies where we are able to cleanly attribute differences in performance and generalization to specific architec"
+    },
+    {
+     "title": "Looped Language Models: A Survey and Meta-Analysis of Recurrent-Depth ...",
+     "url": "https://www.preprints.org/manuscript/202610.1404",
+     "snippet": "Looped language models apply one shared block of Transformer layers repeatedly to the same tokens. Their effective depth, the number of layer applications per token, can grow without adding parameters and can be chosen at inference time. Recurrent depth is thus a way to scale test-time compute in la"
+    },
+    {
+     "title": "Looped Transformers: Recurrent Depth, Huginn and Nanbeige — Locsic",
+     "url": "https://locsic.com/thinking/looped-transformer-recurrent-depth/",
+     "snippet": "Reading guide: A looped Transformer repeatedly applies layers with shared parameters, adding internal computation before producing a token. Recurrent depth is the core mechanism; the Huginn paper demonstrates this test-time compute approach. Unlike extending a written chain of thought, the extra com"
+    },
+    {
+     "title": "Latent reasoning via recurrent depth (Huginn) - AI Wiki",
+     "url": "https://aiwiki.ai/wiki/recurrent_depth_reasoning",
+     "snippet": "Latent reasoning via recurrent depth is an approach to scaling a language model &#x27;s test-time computation by iterating a recurrent transformer block in latent (hidden) space, rather than by generating additional chain-of-thought tokens."
+    },
+    {
+     "title": "Huginn · Aha Looped Transformer",
+     "url": "https://interactive-active-ai.github.io/Aha-Looped-Transformer/papers/huginn/",
+     "snippet": "Huginn Scaling up Test-Time Compute with Latent Reasoning: A Recurrent Depth Approach Jonas Geiping, Sean McLeish, Neel Jain, John Kirchenbauer, Siddharth Singh, Brian R. Bartoldson, Bhavya Kailkhura, Abhinav Bhatele, Tom Goldstein A recurrent core refines hidden states between a prelude and a coda,"
+    },
+    {
+     "title": "Huginn — Scaling Test-Time Compute via Recurrent Depth in Latent Space",
+     "url": "https://yjkim-stat.github.io/log/blog/2026/recurrent-depth/",
+     "snippet": "This paper (whose resulting model is nicknamed Huginn, after one of Odin&#x27;s two ravens — &quot;Thought,&quot; as opposed to its counterpart Muninn, &quot;Memory&quot;) takes a different route: a transformer split into a prelude, a small recurrent core (a handful of shared blocks), and a coda, wh"
+    },
+    {
+     "title": "Huginn-3.5B: Depth-Recurrent Language Model",
+     "url": "https://www.emergentmind.com/topics/huginn-3-5b",
+     "snippet": "Huginn-3.5B is a depth-recurrent language model that scales inference by reusing a core transformer block for iterative refinement in latent space. It leverages latent chain-of-thought reasoning, enabling internal multi-step computation for tasks like math, logic, and programming."
+    }
+   ]
+  },
+  {
+   "query": "iterated learning cultural evolution neural networks knowledge distillation generations collapse",
+   "results": [
+    {
+     "title": "Model Collapse as Cultural Evolution - arXiv.org",
+     "url": "https://arxiv.org/pdf/2605.23054",
+     "snippet": "The conceptual connection between model col- lapse and cultural evolution has been established by several recent contributions. Ren et al. (2024) for- mally showed that LLM self-evolution instantiates Bayesian iterated learning and proved monotonic bias amplification across generations."
+    },
+    {
+     "title": "[2605.23054] Model Collapse as Cultural Evolution - arXiv.org",
+     "url": "https://arxiv.org/abs/2605.23054",
+     "snippet": "Model collapse, the progressive degradation of LLMs trained on their own outputs, has been characterized statistically but lacks a linguistic explanation for which structures degrade, in what order, and why. We show that iterated learning theory from cultural evolution fills this gap. We derive five"
+    },
+    {
+     "title": "GitHub - bettyguo/iterated-collapse: Discriminative Tests of Iterated ...",
+     "url": "https://github.com/bettyguo/iterated-collapse",
+     "snippet": "Overview This repository contains the code and experimental framework for studying model collapse through the lens of cultural evolution theory. We show that iterated learning theory provides a principled linguistic explanation for which structures degrade, in what order, and why during LLM self-tra"
+    },
+    {
+     "title": "Model Collapse: The Cultural Evolution Behind AI&#x27;s Decline",
+     "url": "https://www.machinebrief.com/news/model-collapse-the-cultural-evolution-behind-ais-decline-lgo2",
+     "snippet": "Learning from Cultural Evolution Enter iterated learning theory from cultural evolution. It&#x27;s filling a critical gap by predicting how model collapse unfolds. The study didn&#x27;t just confirm the theory. it ran the models through 10 generations of self-training, revealing that only task-groun"
+    },
+    {
+     "title": "Iterated Learning Model and Cultural Evolution",
+     "url": "https://www.emergentmind.com/topics/iterated-learning-model",
+     "snippet": "Iterated Learning Model is a formal framework that explains how structured, compositional languages emerge through generational transmission under data bottlenecks. Both probabilistic/Bayesian and neural instantiations demonstrate ILM&#x27;s capacity to simulate linguistic evolution and enable compo"
+    },
+    {
+     "title": "[2605.23054] Model Collapse as Cultural Evolution",
+     "url": "https://ar5iv.labs.arxiv.org/html/2605.23054",
+     "snippet": "The conceptual connection between model collapse and cultural evolution has been established by several recent contributions. 65 formally showed that LLM self-evolution instantiates Bayesian iterated learning and proved monotonic bias amplification across generations. 71 argued in a Nature correspon"
+    },
+    {
+     "title": "Model Collapse as Cultural Evolution | Arxiv - DeepPaper",
+     "url": "https://arxiv.deeppaper.ai/papers/2605.23054v1",
+     "snippet": "Model collapse, the progressive degradation of LLMs trained on their own outputs, has been characterized statistically but lacks a linguistic explanation for which structures degrade, in what order, and why. We show that iterated learning theory from cultural evolution fills this gap."
+    },
+    {
+     "title": "AI model collapse might be prevented by studying human ... - Nature",
+     "url": "https://www.nature.com/articles/d41586-024-03023-y",
+     "snippet": "Letter to the Editor CORRESPONDENCE 17 September 2024 AI model collapse might be prevented by studying human language transmission"
+    }
+   ]
+  }
+ ]
+}

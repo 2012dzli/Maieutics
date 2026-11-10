@@ -1,8 +1,12 @@
 # Rabbithole skill — cautious long-running research
 
 Purpose: run deep research ("rabbitholes") under assistant ownership, in small
-cheap waves, until the root question is answered, the user says stop, an
-optional user-set cap is hit, or a genuine block is hit. Research-only.
+cheap waves, until the user says stop or a genuine block is hit.
+The name is the spec: a rabbithole is DELIBERATE wandering. This is a shotgun
+approach for unknown unknowns — we don't know what we don't know, so breadth
+is the method, not a distraction from it. Nearly NOTHING is scope creep:
+tangents, analogues, rival methods, neighboring fields are all legitimate game.
+Narrowing to the root too early is the failure mode, not the discipline.
 
 ## Research agenda (project wall, most-promising first)
 
@@ -11,6 +15,11 @@ optional user-set cap is hit, or a genuine block is hit. Research-only.
 3. Trained settling dynamics — biggest idea; could dissolve the transit-vs-readout split.
 4. Memory transport that actually moves bindings — successor to failed wedge/campfire/choosy.
 5. Why evo climbed the wrong hill — find a selection signal that points at the exam.
+6. STANDING SLOT — tangential analogues + different methods toward the same goal.
+   Not a detour: every few waves, research something that solves the same problem
+   a different way, or a neighboring field's version of it (even if it looks
+   unrelated at first). Direct work optimizes the current path; this slot is
+   how a better path gets found.
 
 Most promising: #1. Most exciting: #3. No pressure to finish a topic before
 hopping — follow whichever is most alive, hop freely, take as long as needed,
@@ -53,7 +62,10 @@ reconcile state with `scratch/CURRENT_TASK.md` before continuing.
 ## Wave loop (cautious defaults)
 
 1. Read state; honor `STOP`, any optional cap, and any user stop message.
-2. Pick at most 2 next questions (disjoint, serving the root).
+2. Pick at most 2 next questions (disjoint, serving the root). Default shape is
+   ONE DIRECT + ONE TANGENTIAL (agenda item 6) every wave — shotgun by
+   default; two direct questions only when a hot lead needs both slots, and
+   never more than 2 waves in a row without a tangential one.
 3. Launch at most 2 scouts in ONE page_eval (`Promise.all`, sealed briefs,
    <=100-word replies, return shape enforced).
 4. Fetch at most 2 PRIMARY sources (arxiv/repo/docs) via `fetch_url`.
@@ -73,11 +85,16 @@ budget-like gate — reaching it means checkpoint + report + await extension.
 
 ## Marathon rule
 
-A run ends only at the stop reasons (root answered, user stop, optional cap,
-genuine block). There is no "final reply with no tools behind it" mid-run:
-status reports ride along WITH continued tool calls, never instead of them.
-A plain reply with no tools IS the handoff — emit one only when the run is
-truly over or paused for a stop reason. When in doubt, keep chaining.
+A run ends only at the stop reasons (user stop, genuine block, optional cap).
+"Root answered" is NOT a stop reason — it is a report milestone: file the
+verdict and keep going on the open branches and the standing slot (agenda
+item 6). Running out of direct questions never ends a run either — that is
+what the tangential slot is for. There is no "final reply with no tools behind
+it" mid-run: status reports ride along WITH continued tool calls, never
+instead of them. A plain reply with no tools IS the handoff — emit one only
+when the run is truly over (stopped, capped, or blocked). When in doubt, keep
+chaining. Past behavior to not repeat: winding down after a few waves because
+the agenda emptied — the hole is nearly endless by design.
 
 ## Interruptions
 
@@ -87,9 +104,13 @@ truly over or paused for a stop reason. When in doubt, keep chaining.
   newest timestamped entry wins conflicts; mark uncertain fields UNKNOWN and
   re-derive with one wave rather than guessing.
 - lost connection: RISK ACCEPTED — resume from last checkpoint.
-- scope: minor add/remove is mine to decide — ask "should this be in scope?",
-  document the answer in `scopeNotes`/log. Major scope change (new root,
-  leaving research-only, irreversible action) escalates to the user.
+- scope: nearly nothing is scope creep (see Purpose). Minor add/remove is mine
+  to decide — ask "should this be in scope?", document the answer in
+  `scopeNotes`/log. A DIFFERENT METHOD toward the SAME goal is in scope by
+  default — never a scope change, never an escalation. A tangent that becomes
+  a different GOAL is also not escalation — promote it to its own run
+  (bookkeeping, log a pointer both ways). Escalation is only for leaving
+  research-only or irreversible actions.
 - forks: pursue competing branches in parallel until one is noticeably less
   productive, then prune the loser with a verdict. Pruned branches keep their
   verdict and stay revivable; pruning is a delegated judgment call, logged.
@@ -122,7 +143,10 @@ Assistant is final stakeholder for research direction within scope and throttle.
   (`s01-...`, `s02-...`); never mutate the real model/training in place —
   copy it into the sandbox first.
 - No new roots: tangents are branches or sandbox iterations, never new runs.
-  Competing ideas get sandbox subfolders, not fresh root questions.
+  Competing ideas get sandbox subfolders, not fresh root questions. A tangent
+  that outgrows its root (it now serves a different goal, not just a different
+  method) may be promoted to its own run — log a pointer both ways and keep
+  going. Promotion is bookkeeping, not escalation.
 - Docs stay OUT: run state, logs, and records live in
   `scratch/rabbithole/<slug>/` + task records, so the sandbox can be freely
   overwritten. Provenance of anything copied in is recorded in the run log

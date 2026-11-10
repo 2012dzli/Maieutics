@@ -532,3 +532,26 @@ never "feels faster" — wall time, accuracy, loss, token counts.
 - Final verify: refresh clean (no errors), 16 sections, 29 dict entries, all new numbers present in live DOM. Snapshot tool unavailable (dep fetch blocked) — text-only changes, DOM checks suffice.
 - UNPUSHED: index.html (v0.13 paper), src/tinynn/evo.js (seed fix + attn genes), src/CHATLOG.md, src/tools/* (unchanged). Needs fresh user PAT to push (all pushes this session blocked on user PAT per standing rule).
 - SESSION RECORD: v2 chain T0+G1-G5 (35/40) + transfer + scale + mechanism + harvest + staircase + breeding + finale-loop + related-work + hygiene. 40 G-students + 16 h24 + 16 h96(15 done, 1 timeout-recovered) + probes. All paper numbers byte-matched to scratch/gseries-v2/*.json.
+
+## 2026-11-10 — ELI5 toggle removed, explainers rewired into the click-dictionary
+- User: remove ELI5 mode, then (correction): keep the ELI5 content, explainer boxes should live in the click-to-open dictionary, not behind a toggle. No toggle anymore.
+- Restored 15 orig eli5 dict lines byte-exact from pushed 785978e (first attempt mis-attributed keys via cross-entry regex span — caught by page_refresh syntax check; fixed with entry-split parse, verified all 15 match orig). Dict back to 3 tabs (Professional/Simple/ELI5).
+- 9 inline boxes -> 9 new single-tab entries (d-eli5-hiker/tokens/orbits/batball/shelf/camping/status/trio/labguide) + 9 ELI5 buttons at their former sites; leads de-duplicated against the panel tag. One prose patch: status note "boxes underneath" -> "notes (click them where they sit)".
+- Verified live: clean refresh, all 9 open with ELI5 tab, 3-tab entries intact, 16 sections.
+- UNPUSHED: index.html (needs fresh user PAT per standing rule).
+
+## 2026-11-10 — Rabbithole skill overhaul (user corrections, 3 rounds)
+- Round 1: skill fenced out tangential/alternative-methods work (all-direct agenda, "serve the root" waves, method-as-scope-change). Fixed: agenda item 6 standing slot, wave default 1 direct + 1 tangential, different-method = in scope by default, tangent promotion = bookkeeping.
+- Round 2: "rabbithole" is DELIBERATE wandering — shotgun for unknown unknowns, nearly nothing is scope creep. Fixed: Purpose rewritten, "root answered" demoted to report milestone (not a stop reason), escalation only for leaving research-only/irreversible, empty agenda never ends a run. Past short runs were my winding-down, named in the skill.
+- UNPUSHED (with the pile below).
+
+## 2026-11-10 — Phase 2.5 verdict + steal tracks (user: wildly incorrect, should have been way earlier)
+- Diagnosis: harvest placed AFTER H2/D/G/staircase/breeding/finale could not inform any of them (curriculum CUT is the receipt); list mixed real methods with armchair verdicts.
+- Rebuilt as 3 standing tracks, subpoints in track files: (A) registry, (B) scaffolding, (C) papers; gameplan Phase 2.5 = short pointer. Search round 1 banked 48 results (search-round1.json); user called structure-first, nothing run yet.
+- Moved scratch/steal/* → src/steal/* (durability: scratch is a cache). Gameplan pointer updated.
+- UNPUSHED (with the pile below).
+
+## 2026-11-10 — Memory audit (user: memory must catch these)
+- Found stale: CURRENT_TASK still said G-series-complete (missed ELI5 rewire, skill overhaul, steal tracks); CHATLOG missed skill + steal entries; Phase 2.5 rewrite skipped its mandatory pre-edit snapshot; steal files sat in scratch (cache, not storage).
+- Fixed: CURRENT_TASK rewritten to now; CHATLOG entries added (ELI5 rewire earlier this session + these two); post-hoc snapshot scratch/gameplan-snapshots/2026-11-10-pre-steal-phase25.md (provenance labeled: in-context exact read, not recollection); steal files byte-verified identical then moved to src/steal/, scratch originals deleted, gameplan pointer updated.
+- Blob-compare vs repo tip 785978e: exactly 4 files differ (index.html, CHATLOG.md, README.md, rabbithole/SKILL.md) + 4 new (src/steal/*). UNPUSHED, needs fresh user PAT. ELI5-restore provenance (scratch/eli5-orig.html + boxes/context files) intentionally left in scratch as throwaway.

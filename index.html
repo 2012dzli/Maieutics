@@ -37,10 +37,6 @@
   .yes { color: #6fcf97; } .no { color: #eb9090; }
   #liveLogEl { white-space: pre-wrap; font-size: 13px; color: #9fb0c9; background: #070b12; border: 1px solid #26314a; border-radius: 10px; padding: 10px; min-height: 60px; }
   #liveAnswerEl { font-size: 16px; background: #0c1a12; border: 1px solid #2c4a38; border-radius: 10px; padding: 12px; margin-top: 10px; }
-  .eli5 { display: none; background: #171208; border: 1px solid #6b5a2e; border-radius: 10px; padding: 10px 12px; margin-top: 10px; font-size: 14px; line-height: 1.55; color: #f0dfb8; }
-  .eli5 b { color: #ffd97a; }
-  body.eli5-on .eli5 { display: block; }
-  .eli5-toggle { cursor: pointer; user-select: none; }
   .paper-meta { font-size: 13px; color: #8ea0bd; }
   .tbd { display: inline-block; font-size: 11px; border: 1px dashed #8a6d2f; border-radius: 999px; padding: 2px 9px; color: #ffd97a; margin-left: 6px; white-space: nowrap; }
   .tag { display: inline-block; font-size: 11px; border-radius: 5px; padding: 1px 7px; margin-right: 6px; }
@@ -72,7 +68,6 @@
 <header class="hero">
   <span class="badge">DRAFT v0.13 — incomplete</span>
   <span class="badge">bench science, h48 CPU</span>
-  <label class="badge eli5-toggle"><input type="checkbox" id="eli5El" style="width:auto;accent-color:#ffd97a"> ELI5 mode — explain like I'm 5</label>
   <h1>Teaching Addressable Lookup to Small Recurrent Networks by Staged Hint Fading</h1>
   <p class="paper-meta">Program: Teaching Small Models to Learn · Authors: TBD · Status: draft v0.13, 2026-11-10 · Code: github.com/2012dzli/Maieutics, src/tinynn · Run records: scratch/h2, scratch/rabbithole, scratch/gseries-v2 · Paper shelf: arXiv:2502.05171, arXiv:2512.19428, arXiv:2312.00752, arXiv:2412.06769, arXiv:2301.13196</p>
   <p><b>Abstract.</b> In this work we investigate whether a small recurrent network can be taught genuine rule-like lookup — retrieving a bound value from an arbitrary position on demand — or whether it can only memorize and shortcut. We propose <b>staged hint fading</b> as a transmission mechanism: a frozen hint-trained teacher supervises a hint-free student while the supervision is graduated to zero. On a bench associative-recall task with fair-slot training, attention-based small nets look up reliably (0.78–0.84 flat across positions) while geometry-only and notebook variants sit near chance. Answer-only training at h48 never ignites (ignite ⇔ Eq. 3; 0/32 across four architectures, 95% CI 0.00–0.11; more steps memorize or heuristic-lock rather than teach). But a frozen hint-trained teacher can transmit the rule to a hint-free student through staged hint fading: 5/8 students ignite with a fast fade (95% Wilson CI 0.31–0.86), and a slower fade rescues 1 of 3 failures (95% CI 0.06–0.79). Chained tutor-to-student across five generations, 35/40 ignite (G1 8/8, G2 6/8, G3 7/8, G4 8/8, G5 6/8) with best students perfect in every generation — teaching compounds, not rots. Transmission is therefore possible but fragile, and failure modes differ by seed. Our contribution is a teachability result with pre-registered bars, plus a characterization of exactly where transmission breaks (severance-fragile collapse, memorize-lean, slow-rescuable). All effect sizes are regime-bound (h48, one task family, n ≤ 8 per condition); the scaling hypothesis and cross-family transfer are <span class="tbd">TBD</span>. Stated failure boundary: cold copying transmits nothing (0/9, 95% CI 0.00–0.33), no single fade schedule fits all seeds, and nothing is claimed beyond h48, one task family, and the schedules tested. This draft reports the first step (transmission) plus its chaining (G1→G5, §8.1); its declared endpoint is §8 — a nursery that, given a topic, creates from scratch a full model that learns it. Everything past G3 is roadmap with pre-registered bars, not results.</p>
@@ -224,7 +219,7 @@
     <div class="block"><b>Coda C</b><small>decodes last state<br><span class="mono">p = C(s_r)</span></small></div>
   </div>
   <p>Training trick: train with a <b>random</b> number of iterations each forward pass, standard next-token loss, no chain-of-thought data. Microscopic details that made it stable at scale: sandwich RMSNorm, RoPE base 50000, gated SiLU MLP, concat adapter for <span class="mono">(s, e) concatenated</span>, truncated backprop through the unrolled loop. At test time you can unroll <b>further than training</b> — that is the whole test-time scaling axis.</p>
-  <div class="eli5"><b>ELI5:</b> the model is a hiker in fog. Prelude draws a rough map of your question. The green looping box is the hiker walking the same trail again and again — each lap the path gets clearer, and the map is re-read every lap so they never get lost. The depth slider below is just how many laps they walk. Coda points at where the hiker stopped and announces the answer.</div>
+<p><button class="dict-link" data-dict="d-eli5-hiker">ELI5: the hiker in fog</button></p>
   <div class="controls">
     <label for="depthRangeEl">Inference depth <span class="mono">r</span> = <b id="depthValEl">16</b></label>
     <input type="range" id="depthRangeEl" min="1" max="64" value="16">
@@ -246,7 +241,7 @@
     <tr><td>What it proves</td><td>real scaling to ~50B-equivalent behavior</td><td>only the <i>shape</i> of the tradeoff: harder questions benefit from more rounds, easy facts don't</td></tr>
   </table>
   <p class="hidden-note">Rule of thumb for the demo below: K hidden rounds ≈ K× the token bill and wall-clock time. The real model pays ≈K× FLOPs but 1× tokens. That gap is why the architecture matters — and why section 4 is honest emulation, not the thing itself.</p>
-  <div class="eli5"><b>ELI5:</b> writing a draft costs paper and time, every single round — that is what tokens are. Thinking quietly in your head costs effort but zero paper — that is FLOPs with zero tokens. The demo below writes drafts (expensive, K× paper). The real Huginn thinks quietly (cheap, 1× paper). Same shape of payoff, totally different bill.</div>
+<p><button class="dict-link" data-dict="d-eli5-tokens">ELI5: paper vs quiet thinking</button></p>
 </section>
 
 <section class="card">
@@ -261,7 +256,7 @@
     <span class="hidden-note" id="orbitMsgEl">each frame = one pass through R</span>
   </div>
   <canvas id="orbitCanvasEl" width="800" height="300"></canvas>
-  <div class="eli5"><b>ELI5:</b> each glowing trail is one thinking-lap of the hiker. Easy questions walk straight to the green dot. Tricky math wanders in circles first — that circling is called <b>orbiting</b> — then lands. You are watching the thinking itself, not the answer.</div>
+<p><button class="dict-link" data-dict="d-eli5-orbits">ELI5: glowing trails</button></p>
 </section>
 
 <section class="card">
@@ -287,7 +282,7 @@
   <div id="liveLogEl">log: idle — drafts stay hidden by design, like latent states.</div>
   <div id="liveAnswerEl" hidden></div>
   <p class="hidden-note">Honest label: online mode is <i>system-level</i> refinement with tokens (K× calls), not latent recurrence. Offline mode is a deterministic local demo, also not the real thing. Both exist so you can verify the claim shape before Phase 2 builds the tiny real recurrent net.</p>
-  <div class="eli5"><b>ELI5:</b> blurting (K=1) says the ball costs 10 cents — wrong, but fast. Double-checking (K=4) slows down and catches it: 5 cents. Paris never needs a second thought, and the log proves it. The drafts stay hidden on purpose — like thoughts you think but never say out loud.</div>
+<p><button class="dict-link" data-dict="d-eli5-batball">ELI5: blurting vs double-checking</button></p>
 </section>
 
 <section class="card">
@@ -311,7 +306,7 @@
     <li><b>Vision (future, not a phase):</b> Pokémon — a Deep Blue for Pokémon: the domain where this learner proves itself (teambuilding = long-horizon composition, battles = reasoning under hidden information). Phase 2 is rehearsal for that.</li>
   </ul>
   <p class="hidden-note">Reading order I recommend: Huginn abstract + sections 1–3, then s1 (short), then CoT intro, then Huginn 5–7. You only need 3 deeply for building.</p>
-  <div class="eli5"><b>ELI5 — the whole shelf in one breath:</b> CoT is thinking <i>out loud</i>, in words. s1 is the teacher saying "wait, double-check that" whenever you try to stop — you often fix yourself. Huginn is thinking <i>quietly</i>, no talking at all. o1 is the famous think-longer machine everyone copies. The new Grassmann paper asks: what if you don't need the giant spotlight (attention) at all — what if you just check how much neighboring words disagree with each other? Almost as good, and the math is tidy enough that we might actually understand it.</div>
+<p><button class="dict-link" data-dict="d-eli5-shelf">ELI5: the whole shelf in one breath</button></p>
 </section>
 
 <section class="card">
@@ -324,12 +319,12 @@
     <li><b>Full offline reasoning (open questions, no Perchance):</b> point the lab at a local model server instead of the built-in demo solver — e.g. Huginn weights under vLLM, or our Phase-2 tiny net. The seam is one function: <span class="mono">window.TeachingLab.ask()</span> in <span class="mono">src/inference.js</span>.</li>
   </ul>
   <p class="hidden-note">GPU note: the real 3.5B Huginn needs a GPU node group (and ~8–16GB VRAM quantized) — that runs as a <i>separate</i> service beside this static page. The lab itself and the Phase-2 tiny net run on CPU.</p>
-  <div class="eli5"><b>ELI5:</b> take the lab camping — no internet, no keys, still works. Laptop, cluster, or cloud: same page, same puzzles.</div>
+<p><button class="dict-link" data-dict="d-eli5-camping">ELI5: take the lab camping</button></p>
 </section>
 
 <section class="card">
   <h2>Appendix G · Phase 2 — teach a tiny net to learn</h2>
-  <div class="eli5"><b>Status (2026-11-08 — read this first):</b> the desert was unfair homework (practiced short, tested long) — but the first fix taught a sneakier shortcut (target always first). Hardened homework (random target slots) gives the honest scoreboard: <b>attention ~0.80 real lookup, notebook family ~chance</b>. New dragons: unseen pairs (0.00), and pushing attention past 0.80. Train below to reproduce any of it — the ELI5 boxes underneath are the <i>history</i> of how we got here, gameplan lives in §5. Vision: a Deep Blue for Pokémon — Phase 2 is rehearsal for that.</div>
+<p><button class="dict-link" data-dict="d-eli5-status">ELI5: status — read this first</button></p>
   <p>A real recurrent-depth network in <span class="mono">src/tinynn/</span>, trained live here on CPU. Same macro design as the paper: prelude embeds, core loops with the input re-injected, coda decodes. Three moves, the full learning-to-learn loop: learn a task, think longer at test time, adapt fast to something new.</p>
   <div class="controls">
     <select id="t2TaskEl" style="max-width:300px">
@@ -375,11 +370,11 @@
     <div><div class="hidden-note">training loss, live</div><canvas id="lossCanvasEl" width="800" height="240" style="width:100%;height:210px;background:#070b12;border:1px solid #26314a;border-radius:10px"></canvas></div>
     <div><div class="hidden-note">hard-set accuracy vs thinking depth r</div><canvas id="curveCanvasEl" width="800" height="240" style="width:100%;height:210px;background:#070b12;border:1px solid #26314a;border-radius:10px"></canvas></div>
   </div>
-  <div class="eli5"><b>ELI5 — the three new experiments:</b> <b>Gist</b> = once Milo's name gets asked about, the teacher names Milo's cup at <i>every</i> step — never drop it. <b>Settle training</b> = grade every round of thinking, not just the last, so the thinking sculpts itself into an answer. <b>Evolution</b> = breed whole schools of tiny gates and keep the bloodlines that learn fastest. <i>Parked:</i> the breeder was re-dealing the same test cards (seed bug — fix in notes, not in the lab yet). <b>Query-head (newest):</b> the kid answering finally gets to <i>see the question</i> while reading the note. <b>The homework fix (2026-11-08 — the big one):</b> we were only <i>practicing</i> short quizzes and <i>testing</i> long ones. Once practice included long quizzes too, everyone scored 1.00 — then we caught them cheating: the answer was always hidden in the <i>same</i> spot. With hiding spots randomized, the honest scores are <b>attention ~0.80 real lookup, notebook family ~chance</b>. The wall was the homework, but fair homework has to randomize <i>where</i> too, not just <i>how far</i>. <b>Combo (run):</b> its 1.00 is retracted (same hiding-spot cheat) — redo pending under fair slots. <b>Gradient surgery:</b> the referee — helped when homework was unfair (0.365 → 0.445 back then), slightly in the way now (1.00 → ~0.87). Tick the box only for unfair-homework experiments.</div>
-  <div id="t2ReportEl" style="white-space:pre-wrap;font-size:13px;color:#9fb0c9;background:#070b12;border:1px solid #26314a;border-radius:10px;padding:10px;margin-top:10px;min-height:60px">report: train a net to fill this in.</div>
+  <p><button class="dict-link" data-dict="d-eli5-trio">ELI5: gist, settle, evolution</button></p>
+<div id="t2ReportEl" style="white-space:pre-wrap;font-size:13px;color:#9fb0c9;background:#070b12;border:1px solid #26314a;border-radius:10px;padding:10px;margin-top:10px;min-height:60px">report: train a net to fill this in.</div>
   <div id="t2SanityEl" class="hidden-note" style="margin-top:8px">fresh eyes: press the button after a training report exists — a brand-new, context-free AI read of that report lands here (blunt, technical, ELI5 ignored).</div>
   <p class="hidden-note">Honest scope: pooled-MLP, running-state, single-head attention, or geometry/gist/query-head cores (task box). Curves are measured, not staged: if extra depth does not help on some task, the bars will say so.</p>
-  <div class="eli5"><b>ELI5 — read this before pressing train:</b> we grow a tiny brain in your browser and teach it baby puzzles. <b>Loss</b> = how wrong it is (watch it fall). <b>Accuracy</b> = how often it's right. The <b>hard set</b> = puzzles it never studied (the real exam). A rising <b>depth curve</b> = thinking longer helps. <b>Adapt</b> = learn a new puzzle fast using the old one (learning <i>how</i> to learn). <b>Attention</b> = a spotlight that looks back at earlier words. <b>Supervision</b> = teacher hints during thinking, not just a final grade. <b>Binding</b> = remembering Milo goes with the red cup, so when Milo is asked about later, you fetch red. <b>Geometry (the 2d ruler — pick it in the task box):</b> neighbors compare arrows instead of using the spotlight; it is <i>supposed</i> to fail questions asked from far away. The <b>kill set</b> = one name at the very start, question at the very end. <b>Carry (the 2d hope — measured 2026-11-08):</b> gossip <i>plus</i> the notebook, graded on never dropping the note. Result: the plain notebook matched it (in-dist 0.86 vs 0.73!) and <i>back then</i> NOTHING crossed long gaps (kill ~0.36, gap-20 ~0.33 for all) — but that was the unfair-homework era (practice short, test long). Retested on fair homework, even the plain notebook reaches ~0.90 and attention/choosy hit 1.00. The gossip-drag verdict is mismatch-era and unretested on fair homework. The <b>campfire (measured too):</b> a running average of all thoughts, whispered into every step — also failed <i>back then</i> (kill 0.32, gap-20 0.32). NOT retested on fair homework yet — the mush verdict is mismatch-era and may not survive. One run could settle it. <b>Choosy fire (measured too):</b> the net learned its <i>own</i> gate — which thoughts to pin to the board, which to let blow past. The gate moved (some pins nearly shut, some wide open) — but the wall didn't budge <i>then</i>: kill 0.38, gap-20 0.32. On position-fixed homework the choosy+question-reader combo scored 1.00 at every depth — then the hiding-spot test exposed it: with slots randomized it falls to ~chance. The gate learned <i>where</i>, not <i>what</i>. Retracted; attention stands alone. <b>X-ray (fresh-eyes test, decisive):</b> froze the brain mid-thought and checked — the note <i>is</i> written perfectly (100%), but — on unfair homework — dies crossing the room; the reader reads faithfully, there's just nothing left. That was a <i>practice</i> problem wearing a carrying-problem costume: with long practice, transit survives (probe 1.00, kill 1.00). <b>Settling test (also decisive):</b> froze the brain and let the question rattle around inside for 8 extra rounds — nothing improved (still ~0.30). Thinking only finds answers if the brain was <i>trained</i> to settle, not just trained to answer. (Stands — but whether settle-training adds anything <i>on top of</i> fair homework is untested.) <b>100-round check (also flat):</b> rolled 100 times while shouting the question louder each round — still nothing (early wiggles faded by round 100). Not slow — just unfair homework. On fair homework the desert blooms (gap-20: 1.00). The newest paper's idea (now a lab experiment): skip the spotlight and just measure how much neighboring arrows disagree. <b>New dragon (2026-11-08):</b> pairs Milo never saw: 0.00 — memorized cards, no lookup trick. Gameplan in §5.</div>
+<p><button class="dict-link" data-dict="d-eli5-labguide">ELI5: read this before pressing train</button></p>
 </section>
 </div>
 
@@ -570,6 +565,42 @@ window.TeachingLab.dict = {
     title: "living document",
     professional: "Update order after every experiment wave, fixed: §4 numbers first, then §6 missteps, then §7 TBDs (graduate or re-scope), then new dictionary entries. A claim with no wave behind it stays tagged TBD; a number never changes without its run record.",
     simple: "The paper updates itself after every experiment — results first, explanations last — so it never goes stale."
+  },
+  "d-eli5-hiker": {
+    title: "ELI5: the hiker in fog",
+    eli5: "the model is a hiker in fog. Prelude draws a rough map of your question. The green looping box is the hiker walking the same trail again and again — each lap the path gets clearer, and the map is re-read every lap so they never get lost. The depth slider below is just how many laps they walk. Coda points at where the hiker stopped and announces the answer."
+  },
+  "d-eli5-tokens": {
+    title: "ELI5: paper vs quiet thinking",
+    eli5: "writing a draft costs paper and time, every single round — that is what tokens are. Thinking quietly in your head costs effort but zero paper — that is FLOPs with zero tokens. The demo below writes drafts (expensive, K× paper). The real Huginn thinks quietly (cheap, 1× paper). Same shape of payoff, totally different bill."
+  },
+  "d-eli5-orbits": {
+    title: "ELI5: glowing trails",
+    eli5: "each glowing trail is one thinking-lap of the hiker. Easy questions walk straight to the green dot. Tricky math wanders in circles first — that circling is called orbiting — then lands. You are watching the thinking itself, not the answer."
+  },
+  "d-eli5-batball": {
+    title: "ELI5: blurting vs double-checking",
+    eli5: "blurting (K=1) says the ball costs 10 cents — wrong, but fast. Double-checking (K=4) slows down and catches it: 5 cents. Paris never needs a second thought, and the log proves it. The drafts stay hidden on purpose — like thoughts you think but never say out loud."
+  },
+  "d-eli5-shelf": {
+    title: "ELI5: the whole shelf in one breath",
+    eli5: "CoT is thinking out loud, in words. s1 is the teacher saying \"wait, double-check that\" whenever you try to stop — you often fix yourself. Huginn is thinking quietly, no talking at all. o1 is the famous think-longer machine everyone copies. The new Grassmann paper asks: what if you don't need the giant spotlight (attention) at all — what if you just check how much neighboring words disagree with each other? Almost as good, and the math is tidy enough that we might actually understand it."
+  },
+  "d-eli5-camping": {
+    title: "ELI5: take the lab camping",
+    eli5: "take the lab camping — no internet, no keys, still works. Laptop, cluster, or cloud: same page, same puzzles."
+  },
+  "d-eli5-status": {
+    title: "ELI5: status — read this first",
+    eli5: "Status (2026-11-08 — read this first): the desert was unfair homework (practiced short, tested long) — but the first fix taught a sneakier shortcut (target always first). Hardened homework (random target slots) gives the honest scoreboard: attention ~0.80 real lookup, notebook family ~chance. New dragons: unseen pairs (0.00), and pushing attention past 0.80. Train below to reproduce any of it — the ELI5 notes (click them where they sit) are the history of how we got here, gameplan lives in §5. Vision: a Deep Blue for Pokémon — Phase 2 is rehearsal for that."
+  },
+  "d-eli5-trio": {
+    title: "ELI5: gist, settle, evolution",
+    eli5: "Gist = once Milo's name gets asked about, the teacher names Milo's cup at every step — never drop it. Settle training = grade every round of thinking, not just the last, so the thinking sculpts itself into an answer. Evolution = breed whole schools of tiny gates and keep the bloodlines that learn fastest. Parked: the breeder was re-dealing the same test cards (seed bug — fix in notes, not in the lab yet). Query-head (newest): the kid answering finally gets to see the question while reading the note. The homework fix (2026-11-08 — the big one): we were only practicing short quizzes and testing long ones. Once practice included long quizzes too, everyone scored 1.00 — then we caught them cheating: the answer was always hidden in the same spot. With hiding spots randomized, the honest scores are attention ~0.80 real lookup, notebook family ~chance. The wall was the homework, but fair homework has to randomize where too, not just how far. Combo (run): its 1.00 is retracted (same hiding-spot cheat) — redo pending under fair slots. Gradient surgery: the referee — helped when homework was unfair (0.365 → 0.445 back then), slightly in the way now (1.00 → ~0.87). Tick the box only for unfair-homework experiments."
+  },
+  "d-eli5-labguide": {
+    title: "ELI5: read this before pressing train",
+    eli5: "we grow a tiny brain in your browser and teach it baby puzzles. Loss = how wrong it is (watch it fall). Accuracy = how often it's right. The hard set = puzzles it never studied (the real exam). A rising depth curve = thinking longer helps. Adapt = learn a new puzzle fast using the old one (learning how to learn). Attention = a spotlight that looks back at earlier words. Supervision = teacher hints during thinking, not just a final grade. Binding = remembering Milo goes with the red cup, so when Milo is asked about later, you fetch red. Geometry (the 2d ruler — pick it in the task box): neighbors compare arrows instead of using the spotlight; it is supposed to fail questions asked from far away. The kill set = one name at the very start, question at the very end. Carry (the 2d hope — measured 2026-11-08): gossip plus the notebook, graded on never dropping the note. Result: the plain notebook matched it (in-dist 0.86 vs 0.73!) and back then NOTHING crossed long gaps (kill ~0.36, gap-20 ~0.33 for all) — but that was the unfair-homework era (practice short, test long). Retested on fair homework, even the plain notebook reaches ~0.90 and attention/choosy hit 1.00. The gossip-drag verdict is mismatch-era and unretested on fair homework. The campfire (measured too): a running average of all thoughts, whispered into every step — also failed back then (kill 0.32, gap-20 0.32). NOT retested on fair homework yet — the mush verdict is mismatch-era and may not survive. One run could settle it. Choosy fire (measured too): the net learned its own gate — which thoughts to pin to the board, which to let blow past. The gate moved (some pins nearly shut, some wide open) — but the wall didn't budge then: kill 0.38, gap-20 0.32. On position-fixed homework the choosy+question-reader combo scored 1.00 at every depth — then the hiding-spot test exposed it: with slots randomized it falls to ~chance. The gate learned where, not what. Retracted; attention stands alone. X-ray (fresh-eyes test, decisive): froze the brain mid-thought and checked — the note is written perfectly (100%), but — on unfair homework — dies crossing the room; the reader reads faithfully, there's just nothing left. That was a practice problem wearing a carrying-problem costume: with long practice, transit survives (probe 1.00, kill 1.00). Settling test (also decisive): froze the brain and let the question rattle around inside for 8 extra rounds — nothing improved (still ~0.30). Thinking only finds answers if the brain was trained to settle, not just trained to answer. (Stands — but whether settle-training adds anything on top of fair homework is untested.) 100-round check (also flat): rolled 100 times while shouting the question louder each round — still nothing (early wiggles faded by round 100). Not slow — just unfair homework. On fair homework the desert blooms (gap-20: 1.00). The newest paper's idea (now a lab experiment): skip the spotlight and just measure how much neighboring arrows disagree. New dragon (2026-11-08): pairs Milo never saw: 0.00 — memorized cards, no lookup trick. Gameplan in §5."
   }
 };
 (function(){
@@ -981,19 +1012,5 @@ window.TeachingLab.dict = {
       sanityEl.textContent = "fresh eyes: unavailable — " + (e && e.message ? e.message : e);
     } finally { sanityBtn.disabled = false; }
   };
-})();
-// ---------- ELI5 mode toggle (persisted) ----------
-(function(){
-  const box = document.getElementById("eli5El");
-  if (!box) return;
-  const KEY = "latentLab:eli5";
-  let on = false;
-  try { on = localStorage.getItem(KEY) === "1"; } catch (e) {}
-  box.checked = on;
-  document.body.classList.toggle("eli5-on", on);
-  box.addEventListener("change", () => {
-    document.body.classList.toggle("eli5-on", box.checked);
-    try { localStorage.setItem(KEY, box.checked ? "1" : "0"); } catch (e) {}
-  });
 })();
 </script>
