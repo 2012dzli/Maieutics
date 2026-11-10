@@ -18,7 +18,15 @@ for (let k = 0; k < 4; k++) for (let v = 0; v < 4; v++) {
 function TASKS_DIAG(c) { return c === 0 || c === 5 || c === 10 || c === 15; }
 
 // Gene subsets: evolution operates on whole Linears, never single weights.
+// Geo arch (Wf/Wr/Wp/Wl/Lzc/L1c/LoutQ) and attn arch (Wq/Wk/Wv/Wa/Lz/Lout)
+// both supported; unknown `which` falls back to all params.
 function geneParams(model, which) {
+  if (model.Wq) { // attention arch
+    if (which === "attn") return [model.Wq.W, model.Wq.b, model.Wk.W, model.Wk.b, model.Wv.W, model.Wv.b, model.Wa.W, model.Wa.b];
+    if (which === "gate") return [model.Lz.W, model.Lz.b];
+    if (which === "readout") return [model.Lout.W, model.Lout.b];
+    return model.params();
+  }
   if (which === "gate") return [model.Wf.W, model.Wf.b];
   if (which === "mixer") return [model.Wr.W, model.Wr.b, model.Wp.W, model.Wp.b, model.Wl.W, model.Wl.b];
   if (which === "inject") return [model.Lzc.W, model.Lzc.b, model.L1c.W, model.L1c.b];
@@ -33,12 +41,12 @@ function perturbInto(child, rng, sigma, sign, which) {
 
 function makeSets(task, seed, n) {
   n = n || 100;
-  void seed;
+  seed = seed || 0; // honored (2026-11-10 fix — was `void seed`, re-dealing identical slices every round)
   return {
-    id: task.makeTestIn(11).slice(0, n),
-    fam: T.TASKS.assocG.killMatrix(61, 8, ALLOWED_ALL, ALLOWED_ALL).slice(0, n),
-    gap4: T.TASKS.assocG.makeGap(51, 4).slice(0, n),
-    gap20: T.TASKS.assocG.makeGap(52, 20).slice(0, n)
+    id: task.makeTestIn(11 + (seed % 89)).slice(0, n),
+    fam: T.TASKS.assocG.killMatrix(61 + seed, 8, ALLOWED_ALL, ALLOWED_ALL).slice(0, n),
+    gap4: T.TASKS.assocG.makeGap(51 + seed * 2, 4).slice(0, n),
+    gap20: T.TASKS.assocG.makeGap(52 + seed * 2, 20).slice(0, n)
   };
 }
 
