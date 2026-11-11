@@ -1,3 +1,10 @@
+<!-- ORIGIN: built in-repo (Teaching Small Models lab, 2026-11-08/09). Not stolen. License: repo-internal. -->
+
+---
+name: rabbithole
+description: Cautious long-running research in small cheap waves. This skill should be used when running deliberate open-ended research with sealed scouts and primary sources until stopped, capped, or blocked — with state, wave loop, and standing tangential slot.
+---
+
 # Rabbithole skill — cautious long-running research
 
 Purpose: run deep research ("rabbitholes") under assistant ownership, in small

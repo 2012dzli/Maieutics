@@ -1,3 +1,10 @@
+<!-- ORIGIN: built in-repo (Teaching Small Models lab, 2026-11-08/09). Not stolen. License: repo-internal. -->
+
+---
+name: memory
+description: Continuity across compactions and sessions. This skill should be used when long work must survive context loss — via working record, run/wall logs, verbatim snapshots, and durable log layers with snapshot, newest-wins, and append-only rules.
+---
+
 # Memory skill — continuity across compactions and sessions
 
 ## Dependencies

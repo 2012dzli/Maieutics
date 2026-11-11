@@ -1,3 +1,10 @@
+<!-- ORIGIN: built in-repo (Teaching Small Models lab, 2026-11-08). Not stolen. License: repo-internal. -->
+
+---
+name: websearch
+description: Agent-side web search with no key or quota. This skill should be used when an external fact is needed (paper, repo, baseline, error message, API doc) — via DDG html recipe plus primary-source fetch and cite rules.
+---
+
 # Web-search skill (agent-side, no key, no quota)
 
 Use when latent-model work needs an external fact: paper, repo, baseline,

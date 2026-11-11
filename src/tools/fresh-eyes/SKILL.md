@@ -1,3 +1,10 @@
+<!-- ORIGIN: built in-repo (Teaching Small Models lab, 2026-11-08/09). Not stolen. License: repo-internal. -->
+
+---
+name: fresh-eyes
+description: Stateless AI reviewers on demand. This skill should be used when a second opinion is needed on plans, premises, lab reports, or skill docs — via single checks, sealed answers, barrages, blind tests, armed rounds, red-teams, steelman, tie-breaks, or tooling self-reviews.
+---
+
 # Fresh-eyes skill — stateless reviewers on demand
 
 Purpose: get a second opinion from an AI that has never seen your project.
