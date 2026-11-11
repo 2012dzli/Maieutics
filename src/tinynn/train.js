@@ -9,6 +9,22 @@ const T = window.__tinyNN;
 const makeRng = T.makeRng, RecModel = T.RecModel, SeqModel = T.SeqModel, AttnModel = T.AttnModel, GeoModel = T.GeoModel, checkAttnGrad = T.checkAttnGrad, checkGeoGrad = T.checkGeoGrad, Adam = T.Adam, softmaxCE = T.softmaxCE;
 const TASKS = T.tasks;
 
+// Seeded dice (src/tinynn/seeded.js): numeric seeds use the legacy mulberry32
+// path bit-identically; strings hash then stream. Falls back to makeRng if
+// seeded.js hasn't loaded (offline order safety).
+function rngFromSeed(seed, suffix) {
+  const s = seed === undefined || seed === null || seed === "" ? 7 : seed;
+  if (typeof s === "number" && Number.isFinite(s)) {
+    if (!suffix) return makeRng(s);
+    if (suffix === "#adapt") return makeRng(s + 50); // legacy adapt offset, bit-identical
+    if (T.makeSeededRng) return T.makeSeededRng(String(s) + String(suffix));
+    return makeRng(s);
+  }
+  const tag = suffix ? String(s) + String(suffix) : s;
+  if (typeof tag === "string" && T.makeSeededRng) return T.makeSeededRng(tag);
+  return makeRng(s);
+}
+
 function makeModel(rng, opts) {
   if (opts.arch === "attn") return new AttnModel(rng, opts.vocab, opts.h, opts.m, opts.classes, opts.d);
   if (opts.arch === "seq") return new SeqModel(rng, opts.vocab, opts.h, opts.m, opts.classes);
@@ -77,7 +93,7 @@ function buildDepthList(fw, y, w, B) {
 }
 
 async function trainModel(opts, onTick) {
-  const rng = makeRng(opts.seed || 7);
+  const rng = rngFromSeed(opts.seed === undefined ? 7 : opts.seed);
   const model = makeModel(rng, opts);
   const opt = new Adam(opts.lr || 5e-3);
   const B = opts.batch || 16;
@@ -146,7 +162,7 @@ async function trainModel(opts, onTick) {
 // multiple teachers fight on the shared readout (combo regression).
 async function trainPCGrad(opts, onTick) {
   const PC = window.TinyNN.pcgrad;
-  const rng = makeRng(opts.seed || 7);
+  const rng = rngFromSeed(opts.seed === undefined ? 7 : opts.seed);
   const model = makeModel(rng, opts);
   const opt = new Adam(opts.lr || 5e-3);
   const B = opts.batch || 16;
@@ -227,9 +243,9 @@ async function trainPCGrad(opts, onTick) {
 // Few-shot adaptation: clone the trained prior vs a fresh model, same steps on variant.
 async function adaptExperiment(base, variantData, opts) {
   const adapted = base.clone();
-  const scratch = makeModel(makeRng(opts.seed || 7), opts);
+  const scratch = makeModel(rngFromSeed(opts.seed === undefined ? 7 : opts.seed), opts);
   async function tune(model) {
-    const rng = makeRng((opts.seed || 7) + 50);
+    const rng = rngFromSeed(opts.seed === undefined ? 7 : opts.seed, "#adapt");
     const opt = new Adam(opts.lr || 5e-3);
     const auxFn = opts.prefixLabels || null;
     const B = 16;
@@ -457,7 +473,7 @@ async function probeLinear(model, trainData, testData, pickIdx, opts) {
 async function logRegTrain(F, Y, C, opts) {
   opts = opts || {};
   const h = F[0].length;
-  const rng = makeRng(opts.seed || 99);
+  const rng = rngFromSeed(opts.seed === undefined ? 99 : opts.seed);
   const es = Math.sqrt(1 / h);
   const W = new Float64Array(C * h), b = new Float64Array(C);
   for (let i = 0; i < W.length; i++) W[i] = rng.uniform(-es, es);
@@ -717,5 +733,6 @@ async function quickPcgradTest() {
     ok: math === "ok" && isFinite(out.lastLoss) && out.lastLoss < out.firstLoss && finite };
 }
 
-window.TinyNN = { TASKS, trainModel, trainPCGrad, makeModel, attnSupervision, evaluate, depthCurve, adaptExperiment, quickSelfTest, quickAttnTest, quickGeoTest, quickCarryTest, quickCampTest, quickChoosyTest, quickProbeTest, quickSettleTest, quickGistTest, quickDepthAuxTest, quickQueryHeadTest, quickPcgradTest, probeLinear, settleProbe, gistProbe, geoInspect, RecModel, SeqModel, AttnModel, GeoModel, makeRng };
+window.TinyNN = { TASKS, trainModel, trainPCGrad, makeModel, attnSupervision, evaluate, depthCurve, adaptExperiment, quickSelfTest, quickAttnTest, quickGeoTest, quickCarryTest, quickCampTest, quickChoosyTest, quickProbeTest, quickSettleTest, quickGistTest, quickDepthAuxTest, quickQueryHeadTest, quickPcgradTest, probeLinear, settleProbe, gistProbe, geoInspect, RecModel, SeqModel, AttnModel, GeoModel, makeRng,
+  makeSeededRng: T.makeSeededRng, parseSeed: T.parseSeed, sampleUntil: T.sampleUntil, weightedPick: T.weightedPick, stableIndex: T.stableIndex, stringToSeed: T.stringToSeed, SURPRISE_WORDS: T.SURPRISE_WORDS, SURPRISE_ODDS: T.SURPRISE_ODDS };
 })();

@@ -11,21 +11,21 @@ only change its status. Status ladder: UNFETCHED → FETCHED (one-line what-it-d
   G3 = sharing/export clunky (no one-click save). Fix = download-button (trivial Utility).
   P1 frontmatter APPROVED (my call): every future steal file wears folder + SKILL.md name/description/license tag.
   Pilot = G1 remember first (my call): smallest, zero-dep, Utility bar = persistence works across reload + guards pass + no bench regression + shipped bundle <=100KB. If pilot fails to move, pause Track A per pilot rule.
-- [ ] A1. Enumerate ALL Perchance plugins via https://perchance.org/plugins (official
+- [x] A1. Enumerate ALL Perchance plugins via https://perchance.org/plugins (official
   directory). We only know ~10 (ai-text, text-to-image, kv, upload, comments,
   secret, server, super-fetch, +docs/literal glimpsed). Every unknown one gets a
   FOUND line below with status UNFETCHED.
-- [ ] A2. Triage the plugin list against our gaps: runtime search for visitors?
+- [x] A2. Triage the plugin list against our gaps: runtime search for visitors?
   docs for the paper? training/eval helpers? Anything that moves a number or
   removes code is a steal candidate; the rest stays FETCHED.
-- [ ] A3. Mine the agent-skills directories for portable skills AND portable AI
+- [x] A3. Mine the agent-skills directories for portable skills AND portable AI
   instructions (system prompts, procedures, eval rubrics, training recipes —
   steals are code and/or AI instructions, user correction): VoltAgent
   awesome-agent-skills (1000+), skillcreatorai list, then marketplaces
   (awesomeskills.dev, skillmd.com, awesomeskill.ai, agentskill.sh) deduped
   against the github lists. Shopping list: websearch-at-runtime, training /
   eval-harness / dataset skills, compute-orchestration skills.
-- [ ] A3b. Portability filter (added after critique C1, 2/3 reviewers): every
+- [x] A3b. Portability filter (added after critique C1, 2/3 reviewers): every
   FETCHED skill gets a class — Logic (portable code), API (needs key/cost →
   coin check in Track B first), Framework (needs an environment we don't have
   → SKIPPED with reason). Only Logic reaches A4; API reaches A4 only with a
@@ -69,7 +69,7 @@ unless Utility-named with a written justification; CDN imports count.
 Verdict: all-green W1 = Logic(W1); keyed = API (coin check); W3-only = Framework/SKIPPED.
 Rule of thumb (refinement R1): runtime fetch, however thin the wrapper, makes
 it API-class, not Logic. Vendored lines count IN the "removes code" math.
-- [ ] A4. Port the winners (code and/or AI instructions, user correction):
+- [x] A4. Port the winners (code and/or AI instructions, user correction):
   runnable code as Perchance plugins via {import:} or vendored modules;
   AI instructions (prompts, procedures, rubrics, recipes) as
   src/tools/<name>/SKILL.md in our steal format, or prompt/recipe files where
@@ -93,7 +93,7 @@ it API-class, not Logic. Vendored lines count IN the "removes code" math.
   PILOT RULE (red-team C5): the FIRST port must move its bench metric beyond
   noise on its own — if the model/bench can't use it, pause Track A porting
   and re-scope instead of porting a second one.
-- [ ] A5. Bar (split after critique C1, 1/3): PERFORMANCE (moves a bench
+- [x] A5. Bar (split after critique C1, 1/3): PERFORMANCE (moves a bench
   metric beyond noise, or removes code) or UTILITY (enables a named required
   feature — e.g. persistent storage, paper docs — with the feature named in
   the STOLEN line). Utility is not a blank check: name the feature or SKIPPED.
@@ -217,3 +217,17 @@ Artifacts: scratch/steal/trials/T1-T16 (16 files). Guards green throughout (quic
 - Readiness-only (no target in repo): jupyter-notebook (T12: conventions already match via guards/waves; notebook DEFERRED), latex-workflow (T14: IMRaD maps cleanly; figure-export gap noted — canvas->PNG for \includegraphics).
 - Parked per gate: pytorch-training / SAE / pyvene (T16: first-use triggers named, no runs).
 - Environment findings: GitHub PAT revoked post-push (401 Bad credentials — pushes need fresh PAT); fetch_url tool outage this session (worker-fetch partial: arxiv PDF OK, DDG/arxiv-API blocked).
+
+## Wave 19 seeder wiring (2026-11-11, user: do it)
+- Vendored string-seed core to src/tinynn/seeded.js (xfnv1a + stream from seeder-plugin; no $output wrapper, no Math.random hijack, no network). Numeric seeds use legacy mulberry32 bit-identically; strings hash then stream. Exposed as T.makeSeededRng/stringToSeed/parseSeed.
+- Wired: trainModel/trainPCGrad/adapt/logRegTrain via rngFromSeed (numeric adapt offset +50 preserved); lab seed box (default 7) + ?seed= in copy/URL-apply + seed in run report + session carry to adapt; Appendix H blurb updated.
+- Verified live: makeSeededRng(7) == makeRng(7) sequences; "milo"x2 identical curves (60-step parity6), 7x2 identical, str!=num; quickSelfTest learned:true + quickAttnTest ok:true post-wiring.
+## Wave 20 Track A close-out (2026-11-11, user: do the rest)
+- Samplers: weightedPick/sampleUntil/stableIndex + SURPRISE list vendored to src/tinynn/seeded.js (pure, seeded; plugin semantics without Perchance lists); bridged to window.TinyNN export (Wave-19 bug: seeded fns lived only on __tinyNN while lab used TinyNN — dice silently no-op'd; fixed + verified).
+- Wired visible: 🎲 lucky-dip (weighted word ≠ current, retry-until capped 12, status reports draws) + 🔐 seed lock (locked value wins over URL-apply reassert + disabled box; unlock restores). Verified live: milo→moss 1 draw; lock at X, overwrite attempt reasserts X; unlock clean.
+- G5 polish (taste flags): .dict-link.term now tertiary (transparent + dotted underline); Appendix H 24 blurbs grouped under 4 headers (7/4/3/10 = 24 verified in DOM).
+- Figure export: download loss/curve PNG buttons (toDataURL, filenames carry seed; verified data URLs). Closes latex figure-export gap mechanically.
+- T6 retry: egress recovered — DDG 10 hits, 2 primaries read (DreamingGoose staged-distillation lineage; hint-distill closest analogue, KL self-distill, no fading). Verdict: no exact prior, nothing contradicts. Report: scratch/steal/trials/T6-retry-report.md.
+- Guards green throughout (quickSelfTest learned:true + quickAttnTest ok:true).
+- A-boxes: A1 census DONE (74 audited) / A2 triage DONE (G1-G5 wants) / A3 mine DONE (github lists + 4 marts) / A3b filter DONE (Logic/API/Framework + ≤100KB) / A4 ports DONE (19 imports + 18 skills + seeded vendor) / A5 bar DONE (each STOLEN names feature or bench move; cuts recorded). Remainder is B-gated (Track B) or no-gap HOLD by design.
+- Revert: Wave 19 revert + delete 🎲/🔐/export wiring + H groups (single commit each). Guard snapshot: self learned:true + attn ok:true (this entry).

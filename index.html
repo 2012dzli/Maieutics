@@ -47,8 +47,9 @@
   .draft-banner { border: 1px dashed #8a6d2f; border-radius: 10px; padding: 10px 12px; margin-top: 10px; font-size: 13px; color: #f0dfb8; background: #171208; line-height: 1.55; }
   .dict-link { background: rgba(127,184,255,.14); border: none; border-bottom: 2px solid #7fb8ff; border-radius: 4px; padding: 0 2px; cursor: pointer; color: inherit; font: inherit; text-align: left; }
   .dict-link:hover { background: rgba(127,184,255,.30); }
-  .dict-link.term { background: rgba(127,184,255,.14); border-bottom: 2px solid #7fb8ff; }
-  .dict-link.term:hover { background: rgba(127,184,255,.30); }
+  .dict-link.term { background: transparent; border-bottom: 1px dotted #7fb8ff; }
+  .dict-link.term:hover { background: rgba(127,184,255,.18); }
+  .hgroup { font-size: 13px; color: #8ea0bd; margin: 10px 0 2px; list-style: none; }
   .dict-panel { position: fixed; top: 0; right: 0; bottom: 0; width: min(380px, 92vw); background: #0e1526; border-left: 1px solid #3b4a6b; z-index: 50; transform: translateX(105%); transition: transform .2s ease; display: flex; flex-direction: column; box-shadow: -12px 0 40px rgba(0,0,0,.5); }
   .dict-panel.open { transform: none; }
   .dict-head { display: flex; align-items: center; gap: 8px; padding: 12px 14px; border-bottom: 1px solid #26314a; }
@@ -359,6 +360,9 @@
       <option value="fair">homework: fair (mixed short+long)</option>
       <option value="short">homework: short only (classic)</option>
     </select>
+    <label title="Seed for this run — numbers replay exactly as before, words are hashed to dice. Same seed twice = same cake.">seed <input id="t2SeedEl" value="7" style="max-width:110px" spellcheck="false"></label>
+    <button id="t2DiceBtn" title="Lucky dip: pick a random word-seed different from the current one (retry-until, capped at 12 tries)">🎲</button>
+    <button id="t2LockBtn" title="Lock the seed: shared links and remembered settings won't overwrite it. Click again to unlock.">🔓</button>
     <label title="Gradient surgery: conflicting teacher gradients are projected apart before each step. Use when multiple supervisions fight on one readout."><input type="checkbox" id="t2PcgradEl" style="width:auto"> gradient surgery (PCGrad)</label>
   </div>
   <div class="controls">
@@ -372,6 +376,10 @@
     <div><div class="hidden-note">training loss, live</div><canvas id="lossCanvasEl" width="800" height="240" style="width:100%;height:210px;background:#070b12;border:1px solid #26314a;border-radius:10px"></canvas></div>
     <div><div class="hidden-note">hard-set accuracy vs thinking depth r</div><canvas id="curveCanvasEl" width="800" height="240" style="width:100%;height:210px;background:#070b12;border:1px solid #26314a;border-radius:10px"></canvas></div>
   </div>
+  <div class="controls" style="margin-top:6px">
+    <button id="t2DlLossBtn" title="Download the loss chart as PNG (for LaTeX \\includegraphics)">download loss PNG</button>
+    <button id="t2DlCurveBtn" title="Download the depth-curve chart as PNG (for LaTeX \\includegraphics)">download curve PNG</button>
+  </div>
   <p><button class="dict-link" data-dict="d-eli5-trio">ELI5: gist, settle, evolution</button></p>
 <div id="t2ReportEl" style="white-space:pre-wrap;font-size:13px;color:#9fb0c9;background:#070b12;border:1px solid #26314a;border-radius:10px;padding:10px;margin-top:10px;min-height:60px">report: train a net to fill this in.</div>
   <div id="t2SanityEl" class="hidden-note" style="margin-top:8px">fresh eyes: press the button after a training report exists — a brand-new, context-free AI read of that report lands here (blunt, technical, ELI5 ignored).</div>
@@ -383,20 +391,24 @@
   <h2>Appendix H · Stolen tools (credit — infrastructure, not evidence)</h2>
   <p>Nothing below is a logic source — the argument stands on the References above. These are borrowed workshop tools (Track A steals, full record in <span class="mono">src/steal/registry.md</span>): what each is, why it was taken, and where it came from. The grammar four are live in this sentence: an honest experiment in sharing geese, conclusively titled [titleCase("stolen tools")]. (a-an and be-verb stay import-only: their MutationObservers ping-pong forever when they share a parent — proven by frozen loads, see registry.)</p>
   <ul>
+    <li class="hgroup"><b>Persistence, sharing, replay (G1–G4)</b></li>
     <li><b>remember-plugin</b> — persists lab inputs across reloads via localStorage. Stolen for G1: every control on this page forgot its setting on refresh. <a href="https://perchance.org/remember-plugin" target="_blank" rel="noopener">perchance.org/remember-plugin</a></li>
     <li><b>markdown-plugin</b> — renders markdown to HTML (vendored marked 0.5.0, no runtime network). Stolen for G2: paper-docs authoring without hand-writing HTML. <a href="https://perchance.org/markdown-plugin" target="_blank" rel="noopener">perchance.org/markdown-plugin</a></li>
     <li><b>literal-plugin</b> — escapes square/curly brackets (plus optional HTML entities) so text containing them is not parsed as Perchance syntax. Stolen for G2: writing paper and prompt text with brackets in it. <a href="https://perchance.org/literal-plugin" target="_blank" rel="noopener">perchance.org/literal-plugin</a></li>
     <li><b>download-button-plugin</b> — one-click anchor to the first-party downloadGenerator API. Stolen for G3: export this lab as a single editable-offline HTML file (the button in the header). <a href="https://perchance.org/download-button-plugin" target="_blank" rel="noopener">perchance.org/download-button-plugin</a></li>
-    <li><b>seeder-plugin</b> — seeded RNG overriding Math.random. Stolen for G4: replayable bench runs (imported; train.js integration spec'd in registry, not yet wired). <a href="https://perchance.org/seeder-plugin" target="_blank" rel="noopener">perchance.org/seeder-plugin</a></li>
+    <li><b>seeder-plugin</b> — seeded RNG overriding Math.random. Stolen for G4: replayable bench runs (imported; vendored string-seed core in <span class="mono">src/tinynn/seeded.js</span>, wired to train/adapt + ?seed= + run ledger). <a href="https://perchance.org/seeder-plugin" target="_blank" rel="noopener">perchance.org/seeder-plugin</a></li>
     <li><b>url-params-plugin</b> — one-line URL query parser. Stolen for G4: shareable configs — the lab applies ?task=&amp;steps=… on load (late, so links win over remembered settings). <a href="https://perchance.org/url-params-plugin" target="_blank" rel="noopener">perchance.org/url-params-plugin</a></li>
     <li><b>copy-text-plugin</b> — clipboard copy. Stolen for G4: the "copy run config" button beside fresh-eyes check. <a href="https://perchance.org/copy-text-plugin" target="_blank" rel="noopener">perchance.org/copy-text-plugin</a></li>
-    <li><b>select-until-plugin</b> — keeps drawing until an item meets a predicate. Stolen for G4: bench sampling (imported; sampling-loop integration spec'd, not yet wired). <a href="https://perchance.org/select-until-plugin" target="_blank" rel="noopener">perchance.org/select-until-plugin</a></li>
-    <li><b>random-select-plugin</b> — odds-based choice returning list references. Stolen for G4: bench sampling (imported; integration spec'd, not yet wired). <a href="https://perchance.org/random-select-plugin" target="_blank" rel="noopener">perchance.org/random-select-plugin</a></li>
-    <li><b>fixed-until-reload-plugin</b> — draws once, holds still until refresh. Stolen for G4: experiment locking (imported; flow integration spec'd, not yet wired). <a href="https://perchance.org/fixed-until-reload-plugin" target="_blank" rel="noopener">perchance.org/fixed-until-reload-plugin</a></li>
-    <li><b>lockable-list-plugin + locker-plugin</b> — lock one result while re-rolling the rest. Stolen for G4: experiment locking (imported; flow integration spec'd, not yet wired). <a href="https://perchance.org/lockable-list-plugin" target="_blank" rel="noopener">lockable-list</a> · <a href="https://perchance.org/locker-plugin" target="_blank" rel="noopener">locker</a></li>
+    <li class="hgroup"><b>Sampling and locking (G4)</b></li>
+    <li><b>select-until-plugin</b> — keeps drawing until an item meets a predicate. Stolen for G4: bench sampling (vendored retry-until in <span class="mono">src/tinynn/seeded.js</span> as sampleUntil; the 🎲 lucky-dip retries until the word differs from the current seed). <a href="https://perchance.org/select-until-plugin" target="_blank" rel="noopener">perchance.org/select-until-plugin</a></li>
+    <li><b>random-select-plugin</b> — odds-based choice returning list references. Stolen for G4: bench sampling (vendored odds choice in <span class="mono">src/tinynn/seeded.js</span> as weightedPick; weights the 🎲 lucky-dip word list). <a href="https://perchance.org/random-select-plugin" target="_blank" rel="noopener">perchance.org/random-select-plugin</a></li>
+    <li><b>fixed-until-reload-plugin</b> — draws once, holds still until refresh. Stolen for G4: experiment locking (vendored stable-per-seed pick in <span class="mono">src/tinynn/seeded.js</span> as stableIndex; same seed always maps to the same draw). <a href="https://perchance.org/fixed-until-reload-plugin" target="_blank" rel="noopener">perchance.org/fixed-until-reload-plugin</a></li>
+    <li><b>lockable-list-plugin + locker-plugin</b> — lock one result while re-rolling the rest. Stolen for G4: experiment locking (locker semantics wired as the 🔐 seed lock — the locked value wins over shared links and remembered settings). <a href="https://perchance.org/lockable-list-plugin" target="_blank" rel="noopener">lockable-list</a> · <a href="https://perchance.org/locker-plugin" target="_blank" rel="noopener">locker</a></li>
+    <li class="hgroup"><b>Paper polish and demo (G5)</b></li>
     <li><b>be- / plural- / a-an- / title-case-plugins</b> — grammar butlers (is-are agreement, irregular plurals via vendored pluralize, a-vs-an, Title Case). Stolen for G5: paper prose — this appendix uses all four on itself. <a href="https://perchance.org/be-plugin" target="_blank" rel="noopener">be</a> · <a href="https://perchance.org/plural-plugin" target="_blank" rel="noopener">plural</a> · <a href="https://perchance.org/a-an-plugin" target="_blank" rel="noopener">a-an</a> · <a href="https://perchance.org/title-case-plugin" target="_blank" rel="noopener">title-case</a></li>
     <li><b>print-button-plugin</b> — window.print plus print CSS. Stolen for G5: paper-friendly printing (header button). <a href="https://perchance.org/print-button-plugin" target="_blank" rel="noopener">perchance.org/print-button-plugin</a></li>
     <li><b>fullscreen-button-plugin</b> — fullscreen toggle. Stolen for G5: demos (header button). <a href="https://perchance.org/fullscreen-button-plugin" target="_blank" rel="noopener">perchance.org/fullscreen-button-plugin</a></li>
+    <li class="hgroup"><b>Skill guides (AI instructions)</b></li>
     <li><b>skill-creator guide</b> — SKILL.md authoring guide (Apache-2.0, vendored to <span class="mono">src/tools/skill-creator/</span>). Stolen as AI instructions: hardens our own P1 steal format. Source: <a href="https://github.com/skillcreatorai/Awesome-Agent-Skills" target="_blank" rel="noopener">skillcreatorai/Awesome-Agent-Skills</a></li>
     <li><b>eval-harness / project-evals / benchmark</b> — eval discipline for G4 (all in <span class="mono">src/tools/</span>): pass/fail criteria + pass@k before bench changes, grader-file conventions, repeatable baselines. Sources: <a href="https://github.com/affaan-m/everything-claude-code" target="_blank" rel="noopener">eval-harness</a> · <a href="https://skillmd.com" target="_blank" rel="noopener">skillmd: project-evals, benchmark</a></li>
     <li><b>paper-compile / latex-workflow (MIT) / pdf-processing</b> — paper pipeline for G5: LaTeX-to-PDF compile loop, IMRaD + bib + arXiv prep, PDF extract/OCR. Source: <a href="https://skillmd.com" target="_blank" rel="noopener">skillmd</a></li>
@@ -717,6 +729,7 @@ window.TeachingLab.dict = {
 <script src="src/offline-solver.js"></script>
 <script src="src/inference.js"></script>
 <script src="src/tinynn/nn.js"></script>
+<script src="src/tinynn/seeded.js"></script>
 <script src="src/tinynn/tasks.js"></script>
 <script src="src/tinynn/train.js"></script>
 <script src="src/tinynn/pcgrad.js"></script>
@@ -945,13 +958,15 @@ window.TeachingLab.dict = {
       const settleW = settleEl ? +settleEl.value : 0;
       const cfg = { vocab: task.vocab, classes: task.classes, h: 48, m: 96, d: task.attnD || 16, maxLen: task.maxLen || 0, arch: task.arch || "rec", geoMode: task.geoMode || "full", queryHead: task.queryHead || false, prefixLabels: task.prefixLabels || null, attnAux: task.attnAux || false, attnAuxW: task.attnAuxW || 0, depthAuxW: settleW };
       const hwMode = ((document.getElementById("t2HwEl") || {}).value) || "fair";
+      const seedRaw = ((document.getElementById("t2SeedEl") || {}).value ?? "7");
+      const seed = window.TinyNN.parseSeed ? window.TinyNN.parseSeed(seedRaw) : 7;
       const train = buildHomework(task, hwMode);
       const liveHist = [];
       status.innerHTML = '<span class="spinner"></span>training ' + task.label + " …";
       report.textContent = "report: training…";
       const useSurgery = !!(document.getElementById("t2PcgradEl") || {}).checked && !!window.TinyNN.trainPCGrad;
       const out = await (useSurgery ? window.TinyNN.trainPCGrad : window.TinyNN.trainModel)(
-        Object.assign({ train, steps, batch: 16, lr: 5e-3, rMode, seed: 7 }, cfg),
+        Object.assign({ train, steps, batch: 16, lr: 5e-3, rMode, seed }, cfg),
         (tk) => {
           status.innerHTML = '<span class="spinner"></span>step ' + tk.step + " / " + tk.of + " — loss " + tk.loss.toFixed(3);
           liveHist.push({ step: tk.step, loss: tk.loss });
@@ -965,7 +980,7 @@ window.TeachingLab.dict = {
       const curve = window.TinyNN.depthCurve(out.model, hard, [1, 2, 4, 8, 16]);
       drawCurve(curve);
       const variantData = task.makeVariant(33);
-      session = { key, model: out.model, variantData, cfg, task };
+      session = { key, model: out.model, variantData, cfg, task, seed };
       const gain = curve.map(c => "r=" + c.r + " " + pct(c.acc)).join("  ");
       const first = curve[0].acc, last = curve[curve.length - 1].acc;
       const chance = 1 / (task.classes || 2);
@@ -986,6 +1001,7 @@ window.TeachingLab.dict = {
       }
       report.textContent =
         "train loss " + out.firstLoss.toFixed(3) + " -> " + out.lastLoss.toFixed(3) +
+        " · seed " + String(seed) +
         " · in-distribution acc " + pct(accIn) + " (r=4)" +
         (settleW > 0 ? " · settle-trained (every depth round graded)" : "") +
         (hwMode === "fair" ? " · fair homework (mixed short+long, random slots)" : " · short-only homework (classic)") +
@@ -1011,7 +1027,7 @@ window.TeachingLab.dict = {
     try {
       status.innerHTML = '<span class="spinner"></span>adapting to variant (60 steps, prior vs scratch)…';
       const r = await window.TinyNN.adaptExperiment(session.model, session.variantData,
-        Object.assign({ steps: 60, lr: 5e-3, seed: 7 }, session.cfg));
+        Object.assign({ steps: 60, lr: 5e-3 }, session.cfg, session.seed === undefined ? {} : { seed: session.seed }));
       const extra = "\nadaptation: zero-shot " + pct(r.before) +
         " -> prior " + pct(r.after) + " vs from-scratch " + pct(r.scratchAcc) +
         " in the same 60 steps." +
@@ -1022,6 +1038,47 @@ window.TeachingLab.dict = {
       report.textContent += "\nadapt error — " + (e && e.message ? e.message : e);
       status.textContent = "error";
     } finally { adaptBtn.disabled = false; trainBtn.disabled = false; }
+  };
+
+  // ---------- G4: lucky-dip seed + seed lock (select-until / random-select / locker equivalents) ----------
+  // The Perchance plugins draw from Perchance lists; our bench draws from seeded
+  // pools, so the equivalents live in src/tinynn/seeded.js as pure functions.
+  // Wired here at the lab layer where they are visible and testable:
+  //  🎲 = weightedPick (random-select) + sampleUntil (select-until: retry until different)
+  //  🔐 = locker semantics (locked value wins over shared links + remembered settings)
+  let lockedSeed = null;
+  const seedBox = () => document.getElementById("t2SeedEl");
+  window.__seedLock = { // test seam: lock state + re-assert for the URL-apply path
+    isLocked: () => lockedSeed !== null,
+    locked: () => lockedSeed,
+    reassert: () => { const el = seedBox(); if (lockedSeed !== null && el) el.value = lockedSeed; }
+  };
+  const diceBtn = document.getElementById("t2DiceBtn"), lockBtn = document.getElementById("t2LockBtn");
+  if (diceBtn) diceBtn.onclick = () => {
+    try {
+      const cur = ((seedBox() || {}).value || "").trim();
+      const rng = window.TinyNN.makeSeededRng(Date.now() % 100000);
+      const r = window.TinyNN.sampleUntil(rng,
+        (g) => window.TinyNN.weightedPick(g, window.TinyNN.SURPRISE_WORDS, window.TinyNN.SURPRISE_ODDS),
+        (w) => w !== cur, 12);
+      seedBox().value = r.value;
+      seedBox().dispatchEvent(new Event("change", { bubbles: true }));
+      document.getElementById("t2StatusEl").textContent = "lucky dip: seed " + r.value + (r.found ? " (different from last, " + r.tries + " draws)" : " (kept — 12 draws all matched, cap hit)");
+    } catch (e) {}
+  };
+  if (lockBtn) lockBtn.onclick = () => {
+    const el = seedBox();
+    if (lockedSeed === null) {
+      lockedSeed = (el && el.value != null) ? el.value : "7";
+      if (el) el.disabled = true;
+      lockBtn.textContent = "🔐";
+      document.getElementById("t2StatusEl").textContent = "seed locked at " + lockedSeed + " — shared links won't overwrite it.";
+    } else {
+      lockedSeed = null;
+      if (el) el.disabled = false;
+      lockBtn.textContent = "🔓";
+      document.getElementById("t2StatusEl").textContent = "seed unlocked — shared links apply normally.";
+    }
   };
 
   // ---------- fresh-eyes check: stateless second opinion on the report ----------
@@ -1054,7 +1111,7 @@ window.TeachingLab.dict = {
     const v = (id) => { const el = document.getElementById(id); return el ? el.value : ""; };
     return "task=" + encodeURIComponent(v("t2TaskEl")) + "&depth=" + encodeURIComponent(v("t2DepthEl")) +
       "&steps=" + encodeURIComponent(v("t2StepsEl")) + "&settle=" + encodeURIComponent(v("t2SettleEl")) +
-      "&hw=" + encodeURIComponent(v("t2HwEl")) + "&pcgrad=" + (document.getElementById("t2PcgradEl").checked ? "1" : "0");
+      "&hw=" + encodeURIComponent(v("t2HwEl")) + "&seed=" + encodeURIComponent(v("t2SeedEl")) + "&pcgrad=" + (document.getElementById("t2PcgradEl").checked ? "1" : "0");
   }
   if (copyBtn) copyBtn.onclick = () => {
     try {
@@ -1062,6 +1119,19 @@ window.TeachingLab.dict = {
       sanityEl.textContent = "run config copied — open this page with ?" + currentCfg() + " to reproduce it.";
     } catch (e) { sanityEl.textContent = "copy unavailable — " + (e && e.message ? e.message : e); }
   };
+  const dlPng = (canvasId, name) => {
+    try {
+      const c = document.getElementById(canvasId);
+      const a = document.createElement("a");
+      a.href = c.toDataURL("image/png");
+      a.download = name + "-seed-" + (((document.getElementById("t2SeedEl") || {}).value || "7").trim() || "7") + ".png";
+      document.body.appendChild(a); a.click(); a.remove();
+      document.getElementById("t2StatusEl").textContent = name + " PNG downloaded — ready for \\includegraphics.";
+    } catch (e) {}
+  };
+  const dlL = document.getElementById("t2DlLossBtn"), dlC = document.getElementById("t2DlCurveBtn");
+  if (dlL) dlL.onclick = () => dlPng("lossCanvasEl", "loss");
+  if (dlC) dlC.onclick = () => dlPng("curveCanvasEl", "curve");
   setTimeout(() => {
     try {
       const p = (typeof root !== "undefined" && root.urlParams) ? root.urlParams : {};
@@ -1078,12 +1148,17 @@ window.TeachingLab.dict = {
       };
       set("t2TaskEl", "task"); set("t2DepthEl", "depth"); set("t2StepsEl", "steps");
       set("t2SettleEl", "settle"); set("t2HwEl", "hw");
+      if (p.seed !== undefined) {
+        const el = document.getElementById("t2SeedEl");
+        if (el) { el.value = p.seed; el.dispatchEvent(new Event("change", { bubbles: true })); }
+      }
       if (p.pcgrad !== undefined) {
         const el = document.getElementById("t2PcgradEl");
         el.checked = p.pcgrad === "1";
         el.dispatchEvent(new Event("change", { bubbles: true }));
       }
-      document.getElementById("t2StatusEl").textContent = "shared config applied from URL — press train to reproduce.";
+      if (window.__seedLock) window.__seedLock.reassert();
+      document.getElementById("t2StatusEl").textContent = "shared config applied from URL — press train to reproduce." + (window.__seedLock && window.__seedLock.isLocked() ? " (seed locked, kept " + window.__seedLock.locked() + ")" : "");
     } catch (e) {}
   }, 1500);
 })();
